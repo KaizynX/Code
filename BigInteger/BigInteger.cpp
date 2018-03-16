@@ -96,6 +96,8 @@ struct BigInteger
 	bool operator == (const BigInteger &b) const { return !(b < *this) && !(*this <b); }
 
 	// 重载四则运算符
+	// 高精度 & 低精度
+	// 高精度 & 高精度
 	BigInteger operator + (const BigInteger &b)const
 	{
 		if(  tag && !b.tag ) return ( b - (-*this) ); // 负 + 正 --> 正 - (-负)
@@ -182,19 +184,20 @@ struct BigInteger
 		BigInteger divisor,dividend(b),res,tmp;             // 除数 被除数 结果
 		divisor.v.clear();
 		res.v.clear();
+		divisor.tag = 0;
 		dividend.tag = 0;                               // 转化为正
 		bool res_init = false;
 		int l, r, mid ,need;
 		for(int i = v.size() - 1; i >= 0; --i)          // 从最高位开始
 		{
 			divisor.v.insert(divisor.v.begin(), v[i] ); // 插入的是低位,插到前面
-			if(divisor < b) continue;
+			if(divisor < dividend) continue;
 			// 二分
 			l = 0; r = BASE - 1, need = -1;
 			while(l <= r)
 			{
 				mid = (l + r) / 2;
-				tmp = b * mid;
+				tmp = dividend * mid;
 				if(tmp == divisor)
 				{
 					need = mid;
@@ -203,13 +206,14 @@ struct BigInteger
 				if(tmp < divisor) l = mid + 1;
 				else r = mid - 1;
 			}
+
 			if(need == -1) need = l < r ? l : r;        // need = min(l, r);
 			if(!res_init) 
 			{
 				res.v.resize(i + 1, 0);
 				res_init = true;
 			}
-			divisor -= b * need;
+			divisor -= dividend * need;
 			res.v[i] = need;
 			/*  减法,效率低下
 			while( divisor >= b )
@@ -224,6 +228,8 @@ struct BigInteger
 			}
 			*/
 		}
+		// if res == 0
+		if(!res.v.size()) res = 0;
 		res.tag = tag ^ b.tag; // ^异或
 		return res;
 	}
@@ -307,6 +313,10 @@ BigInteger sqrt (const BigInteger &a)
 
 int main()
 {
+	// test
+	freopen("test.in","r",stdin);
+	freopen("test.out","w",stdout);
+	//
 	BigInteger a,b,c;
 	cin >> a >> b ;
 	c = a + b;
