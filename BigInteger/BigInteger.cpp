@@ -12,7 +12,7 @@ struct BigInteger
 	static const int WIDTH = 4;  // 一个单位宽度
 
 	vector<int> v;
-	int tag = 0 ;                // 符号位 0 +  1 -
+	bool tag = 0 ;                // 符号位 0 +  1 -
 
 	//构造函数 赋值运算符被重载
 	BigInteger( long long num = 0 ) { *this = num; }
@@ -24,10 +24,10 @@ struct BigInteger
 		v.clear();
 		if(num < 0)
 		{
-			tag = 1;
+			tag = true;
 			num = - num; // 使它转化为正数
 		}
-		else tag = 0;
+		else tag = false;
 		//使用 do while 防止 num == 0
 		do{
 			// 如下是强制类型转换 (因为看不爽Waring)
@@ -43,12 +43,12 @@ struct BigInteger
 		v.clear();
 		if(former_str[0] == '-')
 		{
-			tag = 1;
+			tag = true;
 			str = former_str.substr(1); // 去掉第一位
 		}
 		else
 		{
-			tag = 0;
+			tag = false;
 			str = former_str;
 		}
 		/* len 的神奇运算使其保证合理
@@ -97,15 +97,33 @@ struct BigInteger
 
 	// 重载四则运算符
 	// 高精度 & 低精度
+	/*
+	BigInteger operator * (const int b) const
+	{
+		BigInteger res;
+		res.v.clear();
+		return *this * b;
+	}
+
+	BigInteger operator / (const int b) const
+	{
+		return *this / b;
+	}
+
+	BigInteger operator % (const int b) const
+	{
+		return *this % b;
+	}
+	*/
 	// 高精度 & 高精度
-	BigInteger operator + (const BigInteger &b)const
+	BigInteger operator + (const BigInteger &b) const
 	{
 		if(  tag && !b.tag ) return ( b - (-*this) ); // 负 + 正 --> 正 - (-负)
 		if( !tag &&  b.tag ) return ( *this - (-b) ); // 正 + 负 --> 正 - (-负)
 		BigInteger res;
 		res.v.clear();
-		if(tag && b.tag) res.tag = 1;              // 负 + 负
-		else res.tag = 0;
+		if(tag && b.tag) res.tag = true;              // 负 + 负
+		else res.tag = false;
 		int g = 0;                                 // g为0或1
 		// 以下为 正 + 正
 		for(unsigned i = 0; ; ++i)
@@ -138,7 +156,7 @@ struct BigInteger
 		// 转化为 大 减 小
 		if(*this < b) return -( b - *this );
 		// 以下为 正 - 正
-		res.tag = 0;
+		res.tag = false;
 		int g = 0; // g 为0或-1
 		for(unsigned i = 0; ; ++i)
 		{
@@ -184,8 +202,8 @@ struct BigInteger
 		BigInteger divisor,dividend(b),res,tmp;             // 除数 被除数 结果
 		divisor.v.clear();
 		res.v.clear();
-		divisor.tag = 0;
-		dividend.tag = 0;                               // 转化为正
+		divisor.tag = false;
+		dividend.tag = false;                               // 转化为正
 		bool res_init = false;
 		int l, r, mid ,need;
 		for(int i = v.size() - 1; i >= 0; --i)          // 从最高位开始
@@ -311,11 +329,29 @@ BigInteger sqrt (const BigInteger &a)
 	return l < r ? l : r;
 }
 
+BigInteger pow (const BigInteger &a, const long long k)
+{
+	if( k == 0 ) return 1;
+	if( k == 1 ) return a;
+	if( k == 2 ) return a * a;
+	if( k %  2 ) return a * pow(a, k - 1);
+	return pow( pow(a, k / 2), 2);
+}
+
+BigInteger pow (const BigInteger &a, const BigInteger &k)
+{
+	if( k == 0 ) return 1;
+	if( k == 1 ) return a;
+	if( k == 2 ) return a * a;
+	if( k.v.back() % 2 ) return a * pow(a, k - 1);
+	return pow( pow(a, k / 2), 2);
+}
+
 int main()
 {
 	// test
-	freopen("test.in","r",stdin);
-	freopen("test.out","w",stdout);
+	freopen("E:\\test.in","r",stdin);
+	freopen("E:\\test.out","w",stdout);
 	//
 	BigInteger a,b,c;
 	cin >> a >> b ;

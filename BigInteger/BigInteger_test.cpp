@@ -19,14 +19,24 @@ int main()
 		start = clock();
 		system("E:\\Learning\\Code\\BigInteger\\BigInteger.exe");
 		finish = clock();
-		if(system("fc E:\\Learning\\Code\\BigInteger\\test.out E:\\Learning\\Code\\BigInteger\\test_ans.out"))
+		if(system("fc E:\\test.out E:\\test_ans.out"))
 		{
 			cerr << "WA" << endl;
+			system("E:\\test.in");
+			system("E:\\test.out");
+			system("E:\\test_ans.out");
+
+			system("del E:\\test.in");
+			system("del E:\\test.out");
+			system("del E:\\test_ans.out");
 			return 0;
 		}
 		else
 		{
 			printf("date:%d %.1fms\n",i,finish - start);
+			system("del E:\\test.in");
+			system("del E:\\test.out");
+			system("del E:\\test_ans.out");
 		}
 	}
 	return 0;

@@ -1,12 +1,13 @@
 #include <cstdio>
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
 int main()
 {
-	freopen("test.in","r",stdin);
-	freopen("test_ans.out","w",stdout);
+	freopen("E:\\test.in","r",stdin);
+	freopen("E:\\test_ans.out","w",stdout);
 
 	long long a,b;
 	cin >> a >> b;
