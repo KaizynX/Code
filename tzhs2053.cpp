@@ -1,7 +1,6 @@
 #include <cstdio>
 #include <iostream>
 #include <cstring>
-#include <memory>
 
 using namespace std;
 
@@ -19,7 +18,7 @@ struct tree
 	}
 } ;
 
-void build_tree(auto cur)
+void build_tree(tree *cur)
 {
 	if(pos >= str.length()) return;
 	cur->c = str[pos++];
@@ -30,7 +29,7 @@ void build_tree(auto cur)
 	build_tree(cur->r);
 }
 
-void LDR_print(auto cur)
+void LDR_print(tree *cur)
 {
 	if(cur->c == '.') return;
 	LDR_print(cur->l);
@@ -38,7 +37,7 @@ void LDR_print(auto cur)
 	LDR_print(cur->r);
 }
 
-void LRD_print(auto cur)
+void LRD_print(tree *cur)
 {
 	if(cur->c == '.') return;
 	LRD_print(cur->l);
@@ -49,7 +48,7 @@ void LRD_print(auto cur)
 int main()
 {
 	cin >> str;
-	shared_ptr<tree> root(make_shared<tree>());
+	tree *root = new(tree);
 	build_tree(root);
 	LDR_print(root);
 	putchar('\n');

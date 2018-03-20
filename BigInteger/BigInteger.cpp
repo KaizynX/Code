@@ -350,8 +350,8 @@ BigInteger pow (const BigInteger &a, const BigInteger &k)
 int main()
 {
 	// test
-	freopen("E:\\test.in","r",stdin);
-	freopen("E:\\test.out","w",stdout);
+	freopen("D:\\test.in","r",stdin);
+	freopen("D:\\test.out","w",stdout);
 	//
 	BigInteger a,b,c;
 	cin >> a >> b ;

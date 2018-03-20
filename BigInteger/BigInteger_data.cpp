@@ -11,7 +11,7 @@ const long long Mo = 3037000000;
 int main()
 {
 	//freopen("test.in","w",stdout);
-	ofstream of("E:\\test.in",ios::out);
+	ofstream of("D:\\test.in",ios::out);
 	long long a,b;
 	default_random_engine rd(static_cast<unsigned>(time(NULL)));
 	a = ( rd() - rd() ) % Mo;

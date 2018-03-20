@@ -6,8 +6,8 @@ using namespace std;
 
 int main()
 {
-	freopen("E:\\test.in","r",stdin);
-	freopen("E:\\test_ans.out","w",stdout);
+	freopen("D:\\test.in","r",stdin);
+	freopen("D:\\test_ans.out","w",stdout);
 
 	long long a,b;
 	cin >> a >> b;
