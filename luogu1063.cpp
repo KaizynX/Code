@@ -8,7 +8,7 @@ int n;
 int a[Maxn*3];
 int f[Maxn][Maxn];
 // Max_ans <= 2.1 * 10^9
-// f[i][j] i 到 j 最大的能量
+// f[i][j] operate [i,j]
 
 int main()
 {
