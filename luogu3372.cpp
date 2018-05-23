@@ -6,7 +6,7 @@ using namespace std;
 const int Maxn = 1e5 + 7;
 
 int n, m;
-long long a[Maxn], b[Maxn], bi[Maxn];
+long long b[Maxn], bi[Maxn], s[Maxn];
 
 template <typename T> inline void read(T &res)
 {
@@ -32,14 +32,24 @@ inline long long ask(long long *arr,int x) // return SUM of arr[1~x]
 inline long long query(int x, int y)
 {
 	// (i+1) * sum(b,i) - sum(bi,i)
-	return (y+1)*ask(b, y) - ask(bi, y) + x*ask(b, x-1) - ask(bi, x-1);
+#ifdef DEBUG
+	printf("%lld %lld %lld %lld %lld\n",ask(b, y) , ask(bi, y) , ask(b, x-1) , ask(bi, x-1) , s[y] - s[x-1]);
+#endif
+	// return (y+1)*ask(b, y) - ask(bi, y) + x*ask(b, x-1) - ask(bi, x-1) + s[y] - s[x-1];
+	long long sumy = s[y] + (y+1)*ask(b, y) - ask(bi, y),
+		      sumx = s[x-1] + x*ask(b,x-1) - ask(bi, x-1);
+	return sumy - sumx;
 }
 
 int main()
 {
 	long long k;
 	read(n); read(m);
-	for(int i = 1; i <= n; ++i) read(a[i]);
+	for(int i = 1; i <= n; ++i)
+	{
+		read(k);
+		s[i] = s[i-1] + k;
+	}
 	for(int i = 0, op, x, y; i < m; ++i)
 	{
 		read(op); read(x); read(y);
