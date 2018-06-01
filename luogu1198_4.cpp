@@ -24,7 +24,7 @@ int main()
 	{
 		cin >> op; read(tmp);
 		if(op == 'A') update(++cnt, (t + tmp) % D);
-		else printf("%d\n", t = query(tmp, cnt));
+		else printf("%d\n", tmp == 0 ? 0 : t = query(tmp, cnt));
 	}
 }
 
