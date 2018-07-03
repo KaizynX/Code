@@ -11,16 +11,26 @@ const int Maxk = 10;
 int n, k;
 struct BigInteger
 {
-	static const int BASE = 1e4;
-
 	int v[Maxn], len;
 	
-	BigInteger(){ memset(v, 0, sizeof v); len = 0; }
+	BigInteger(int num = 0) { *this = num; }
 	BigInteger(const string &str) { *this = str; }
 
+	BigInteger operator = (int num)
+	{
+		len = 0;
+		memset(v, 0, sizeof v);
+		do
+		{
+			v[++len] = num % 10;
+			num /= 10;
+		} while(num);
+		return *this;
+	}
 	BigInteger operator = (const string &str)
 	{
 		len = 0;
+		memset(v, 0, sizeof v);
 		for(int i = str.length()-1; i >= 0; --i)
 			v[++len] = str[i]-'0';
 		return *this;
@@ -50,11 +60,11 @@ struct BigInteger
 		return false;
 	}
 
-} f[Maxn][Maxn][Maxk]; 
-// f[l][r][k] maxv of [l][r] divide to k pieces
+} f[Maxk][Maxn], v[Maxn][Maxn]; 
+// f[k][pos] maxv of put k'th * to pos'back
+// v[l][r] value of [l, r]
 
 // template <typename T> inline T max(const T &a, const T &b) const { return a < b ? b : a; }
-
 ostream &operator << (ostream &os, const BigInteger big)
 {
 	for(int i = big.len; i; --i)
@@ -66,21 +76,31 @@ int main()
 {
 	string num;
 	cin >> n >> k >> num;
-	for(int i = 0; i < n; ++i)
-		for(int j = i; j < n; ++j)
-			f[i][j][1] = num.substr(i, (j-i+1));
-	// dp
-	for(int ki = 2; ki <= k; ++ki)
-		for(int i = 0; i < n-ki+1; ++i)
-			for(int j = i+ki-1; j < n; ++j)
-				for(int mid = i; mid < j; ++mid)
-				{
-					f[i][j][ki] = max(f[i][j][ki], f[i][mid][ki-1] * f[mid+1][j][1]);
+	for(int i = 1; i <= n; ++i)
+		for(int j = i; j <= n; ++j)
+		{
+			v[i][j] = num.substr(i-1, (j-i+1));
 #ifdef DEBUG
-					cout << i << " " << j << " " << ki << " " << mid << " " << f[i][j][ki] << endl;
+//			cout << i << " " << j << " " << v[i][j] << endl;
 #endif
-				}
-	
-	cout << f[0][n-1][k] << endl;
+		}
+	for(int i = 1; i <= n; ++i)
+		f[0][i] = v[1][i];
+	f[0][0] = 1;
+	// dp
+	for(int i = 1; i <= k; ++i)
+		for(int p = i; p < n; ++p)
+			for(int j = i-1; j < p; ++j)
+			{
+				f[i][p] = max(f[i][p], f[i-1][j] * v[j+1][p]);
+#ifdef DEBUG
+				cout << i << " " << p << " " << f[i][p] << endl;
+#endif
+			}
+
+	BigInteger ans = 0;
+	for(int i = k; i < n; ++i)
+		ans = max(ans, f[k][i] * v[i+1][n]);
+	cout << ans << endl;
 	return 0;
 }
