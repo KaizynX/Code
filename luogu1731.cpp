@@ -19,6 +19,7 @@ void dfs(int r, int h, int v, int d, int s)
 				int hi = (n-v)/(r*r);
 				if(!ans) ans = s+hi*2*r + r*r;
 				else ans = min(ans, s+hi*2*r + r*r);
+				// if(ans == 68) printf("%d %d %d\n", s, hi, r);
 			}
 		}
 		return;
