@@ -1,60 +1,50 @@
 #include <iostream>
 #include <cstdio>
-#include <queue>
-#include <bitset>
+#include <vector>
 
 using namespace std;
 
-int ans, rest;
-bool b[10][10][10];
+int ans = -1, rest;
+int b[10][10][10];
 bool vis[10][10];
 int mark[10][10];
 int a[10][10];
-
-struct Node
-{
-	int x, y, choice;
-	Node(){}
-	Node(int x, int y, int choice):x(x), y(y), choice(choice) {}
-
-	bool operator < (const Node &b) const
-	{
-		return choice > b.choice;
-	}
-};
-
-queue<Node> q;
+vector<pair<int,int> > v;
 
 inline void init(); // init the mark
-inline bool judge(int, int, int); // wether there can put this
 inline void change(int, int, int, int); // set flag
 inline int cal_v(); // calc the value of whole picture
-inline int cal_c(int, int); // calc the choice of a pos
+inline int cal_c(int, int);
 
 void dfs(int flag)
 {
-	if(!flag) {
+	if(!flag) 
+	{
 		ans = max(ans, cal_v());
 		return;
 	}
-
-	Node cur = q.top(); q.pop();
-	while(vis[cur.x][cur.y]) {
-		cur = q.top();
-		q.pop();
+	
+	// find the one
+	int minx, miny, minc = 10;
+	for(int i = 0, tmp, x, y, edge = v.size(); i < edge; ++i)
+	{
+		x = v[i].first; y = v[i].second;
+		if(vis[x][y]) continue;
+		if( (tmp = cal_c(x, y)) < minc)
+			minx = x, miny = y, minc = tmp;
+		if(minc <= 1) break;
 	}
-
+	// search it
+	vis[minx][miny] = true;
 	for(int i = 1; i <= 9; ++i)
 	{
-		if(b[cur.x][cur.y][i]) continue;
-		if(!judge(cur.x, cur.y, i)) continue;
-		a[cur.x][cur.y] = i;
-		change(cur.x, cur.y, i, 1);
-		vis[cur.x][cur.y] = true;
+		if(b[minx][miny][i]) continue;
+		change(minx, miny, i, 1);
+		a[minx][miny] = i;
 		dfs(flag-1);
-		change(cur.x, cur.y, i, -1);
-		vis[cur.x][cur.y] = false;
+		change(minx, miny, i, -1);
 	}
+	vis[minx][miny] = false;
 }
 
 int main()
@@ -65,19 +55,18 @@ int main()
 		{
 			scanf("%d", &a[i][j]);
 			if(!a[i][j]) {
-				++rest; continue;
+				++rest;
+				v.push_back(make_pair(i, j));
+				continue;
 			}
 			vis[i][j] = true;
-			if(!judge(i, j, a[i][j])) {
+			if(b[i][j][a[i][j]]) {
 				puts("-1"); return 0;
 			}
 			change(i, j, a[i][j], 1);
 		}
-	for(int i = 1; i <= 9; ++i)
-		for(int j = 1; j <= 9; ++j)
-			if(!a[i][j])
-				q.push(Node(i, j, cal_c(i, j)));
 	dfs(rest);
+	printf("%d\n", ans);
 	return 0;
 }
 
@@ -94,32 +83,26 @@ inline void init()
 	mark[5][5] = 10;
 }
 
-inline bool judge(int x, int y, int num)
-{
-	for(int i = 1; i <= 9; ++i)
-		if(b[x][i][num] || b[i][y][num]) return false;
-	if(x == y)
-		for(int i = 1; i <= 9; ++i)
-			if(b[i][i][num]) return false;
-	if(x + y == 10)
-		for(int i = 1; i <= 9; ++i)
-			if(b[i][10-i][num]) return false;
-	return true;
-}
-
 inline void change(int x, int y, int num, int v)
 {
+	// 横竖
 	for(int i = 1; i <= 9; ++i)
 	{
 		b[x][i][num] += v;
 		b[i][y][num] += v;
 	}
+	/* 对角线
 	if(x == y)
 		for(int i = 1; i <= 9; ++i)
 			b[i][i][num] += v;
 	if(x + y == 10)
 		for(int i = 1; i <= 9; ++i)
 			b[i][10-i][num] += v;
+	*/
+	// 小九格
+	for(int i = (x-1)/3*3+1; i <= (x-1)/3*3+3; ++i)
+		for(int j = (y-1)/3*3+1; j <= (y-1)/3*3+3; ++j)
+			b[i][j][num] += v;
 }
 
 inline int cal_v()
@@ -133,8 +116,8 @@ inline int cal_v()
 
 inline int cal_c(int x, int y)
 {
-	int res = 0;
+	int res = 9;
 	for(int i = 1; i <= 9; ++i)
-		if(!b[x][y][i]) ++res;
+		if(b[x][y][i]) --res;
 	return res;
 }
