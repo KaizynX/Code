@@ -7,12 +7,12 @@ int n,k;
 
 int main()
 {
-	long long cnt=1;
+	int cur = 1;
 	scanf("%d%d",&n,&k);
-	for(int i=1;i<=k;++i)
+	for(int i = 0;i <= k; ++i)
 	{
-		printf("%lld ",cnt);
-		cnt*=n;
+        printf("%d ", cur);
+        cur *= n;
 	}
 	return 0;
 }
