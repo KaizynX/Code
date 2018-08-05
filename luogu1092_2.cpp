@@ -38,10 +38,10 @@ void dfs(int cur, int line)
 		exit(0);
 	}
 
+	int &now = v[a[line][cur]];
 	if(line == 2)
 	{
-		int &now = v[a[line][cur]],
-			tmp = v[a[0][cur]] + v[a[1][cur]] + p[cur+1];
+		int tmp = v[a[0][cur]] + v[a[1][cur]] + p[cur+1];
 #ifdef DEBUG
 			printf("%d %d %d %d %d\n", cur, now, v[a[0][cur]], v[a[1][cur]], p[cur+1]);
 #endif
@@ -52,20 +52,25 @@ void dfs(int cur, int line)
 			{
 				p[cur] = tmp/n;
 				dfs(cur-1, 0);
+                p[cur] = 0;
 			}
 		}
 		else
 		{
-			now = tmp % n;
-			p[cur] = tmp / n;
-			if(judge(cur)) dfs(cur-1, 0);
-			now = -1;
-			p[cur] = 0;
+            if(!used[tmp%n])
+            {
+			    now = tmp % n;
+    			p[cur] = tmp / n;
+                used[tmp%n] = true;
+	    		if(judge(cur)) dfs(cur-1, 0);
+                used[tmp%n] = false;
+		    	now = -1;
+			    p[cur] = 0;
+            }
 		}
 	}
 	else
 	{
-		int &now = v[a[line][cur]];
 		if(now != -1) dfs(cur, line+1);
 		else
 		{
