@@ -1,4 +1,4 @@
-# 记录
+﻿# 记录
 
 ## 动态规划DP
 ### 背包
@@ -7,12 +7,15 @@ luogu P1282 多米诺骨牌<br>
 luogu P1156 垃圾陷阱<br>
 luogu P2983 [USACO10FEB]购买巧克力Chocolate Buying<br>
 luogu P2170 选学霸 <br>
+####二维
+luogu P2736 “破锣摇滚”乐队 Raucous Rockers <br>
 ### 线性
 luogu P2904 [USACO08MAR]跨河River Crossing<br>
 luogu P2725 邮票 Stamps <br>
 luogu P2066 机器分配<br>
 luogu P2196 挖地雷<br>
 luogu P4771 八百标兵奔北坡<br>
+luogu P1799 数列_NOI导刊2010提高（06）<br>
 ### 区间
 luogu P1103 书本整理 <br>
 luogu P1026 统计单词个数<br>
@@ -20,6 +23,8 @@ luogu P1043 数字游戏<br>
 luogu P1220 关路灯<br>
 luogu P1025 数的划分 <br>
 luogu P1018 乘积最大<br>
+###最长公共子序列LCS
+luogu P1435 回文字串 <br>
 ### 单调队列
 luogu P1725 琪露诺<br>
 luogu P1440 求m区间内的最小值<br>
@@ -30,6 +35,7 @@ luogu P2196 挖地雷<br>
 luogu P2986 [USACO10MAR]伟大的奶牛聚集Great Cow Gat...<br>
 luogu P1364 医院设置<br>
 luogu P1270 “访问”美术馆<br> 
+luogu P1122 最大子树和 <br>
 
 ## 并查集
 luogu P3144 [USACO16OPEN]关闭农场Closing the Farm_Silver<br>
@@ -53,6 +59,8 @@ luogu P1803 凌乱的yyy / 线段覆盖<br>
 luogu UVA10382 Watering Grass<br>
 luogu P2434 [SDOI2005]区间<br>
 
+##数学
+luogu U34202 JerryC Loves Driving<br>
 
 ## 模拟
 luogu P1056 排座椅 <br>
@@ -66,6 +74,8 @@ luogu P1021 邮票面值设计<br>
 luogu P1379 八数码难题 <br>
 luogu P1074 靶形数独 <br>
 luogu P1731 [NOI1999]生日蛋糕 <br>
+luogu P2736 “破锣摇滚”乐队 Raucous Rockers <br>
+luogu P3252 [JLOI2012]树<br>
 
 ## 图论
 luogu P1983 车站分级 <br>
