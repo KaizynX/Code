@@ -5,7 +5,7 @@
 
 using namespace std;
 
-const int Maxn = 1e5+7;
+const int Maxn = 1e4+7;
 
 int n, m, v[Maxn];
 bitset<Maxn> b[Maxn];
