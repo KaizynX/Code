@@ -3,8 +3,11 @@
 
 using namespace std;
 
+int a, b;
+
 int main()
 {
-    cout << "Hello World!" << endl;
+    cin >> a >> b;
+    cout << a+b << endl;
     return 0;
 }
