@@ -10,7 +10,8 @@ const string Sstop = "stopped playing games!";
 const string Bad = "How Bad Oiers Are!";
 const string Good = "How Good Oiers Are!";
 
-int n, lent[10], lens[10], has_t, states[10], died[10];
+int n, has_t, states[10], died[10];
+size_t lent[10], lens[10];
 string teacher[10], student[10];
 string message, words;
 
@@ -41,7 +42,7 @@ int main()
         cin >> student[i];
         lens[i] = student[i].length();
     }
-    char c = getchar();
+	scanf("\n");
     while(n--)
     {
         getline(cin, message);
