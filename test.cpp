@@ -2,27 +2,44 @@
 
 using namespace std;
 
-int myAtoi(string str) {
-        long long res = 0, tag = 1, edge = 3000000000;
-        int cur = 0;
-        while(cur < str.length() && str[cur] == ' ') cur++;
-        if(cur < str.length() && str[cur] == '-') tag = -1, cur++;
-        if(cur < str.length() && str[cur] == '+') cur++;
-        while(cur < str.length() && str[cur] >= '0' && str[cur] <= '9')
+int fa(vector<int> &A)
+{
+    int res = 0;
+    for(int l = 0; l < A.size(); ++l)
+    {
+        for(int r = l; r < A.size(); ++r)
         {
-            res = res*10+str[cur]-'0';
-            if(res > edge) break;
-            cur++;
+            int minv = 30001;
+            for(int k = l; k <= r; ++k)
+            {
+                minv = min(minv, A[k]);
+            }
+            res += minv;
         }
-        if(tag == 1) return res <= INT_MAX ? res : INT_MAX;
-        res *= tag;
-        return res >= INT_MIN ? res : INT_MIN;
     }
+    return res;
+}
+
+int fb(vector<int> &A)
+{
+    int res = 0, vis[A.size()];
+    for(int i = 0; i < A.size(); ++i)
+    {
+        int l = i, r = i;
+        while(--l >= 0 && A[l] >= A[i]);
+        while(++r < A.size() && A[r] <= A[i]);
+        ++l; --r;
+        res += A[i]*(i-l+1)*(r-i+1);
+    }
+    return res;
+}
 
 int main()
 {
-    string str;
-	getline(cin, str);
-	cout << myAtoi(str) << endl;
+    freopen("tmp.txt", "w", stdout);
+    cout << "[";
+    for(int i = 1; i < 30000; ++i)
+        cout << "30000,";
+    cout << "30000]";
 	return 0;
 }
