@@ -2,44 +2,40 @@
 
 using namespace std;
 
-int fa(vector<int> &A)
+inline long long sum(int l, int r)
 {
-    int res = 0;
-    for(int l = 0; l < A.size(); ++l)
-    {
-        for(int r = l; r < A.size(); ++r)
-        {
-            int minv = 30001;
-            for(int k = l; k <= r; ++k)
-            {
-                minv = min(minv, A[k]);
-            }
-            res += minv;
-        }
-    }
+    int x = l+r, y = r-l+1;
+    if(x&1) y /= 2;
+    else x /= 2;
+    return 1ll*x*y;
+}
+
+inline long long calc(int l, int r, int i)
+{
+    int a = l/i, b = r/i;
+    if(a == b) return sum(l%i, r%i);
+    long long res = sum(l%i, i-1)+sum(0, r%i);
+    if(a+1 > b) res += sum(0, i-1)*(b-a-1);
     return res;
 }
 
-int fb(vector<int> &A)
+inline long long baoli(int l, int r, int i)
 {
-    int res = 0, vis[A.size()];
-    for(int i = 0; i < A.size(); ++i)
-    {
-        int l = i, r = i;
-        while(--l >= 0 && A[l] >= A[i]);
-        while(++r < A.size() && A[r] <= A[i]);
-        ++l; --r;
-        res += A[i]*(i-l+1)*(r-i+1);
-    }
+    long long res = 0;
+    for(int j = l; j <= r; ++j)
+        res += j%i;
     return res;
 }
 
 int main()
 {
-    freopen("tmp.txt", "w", stdout);
-    cout << "[";
-    for(int i = 1; i < 30000; ++i)
-        cout << "30000,";
-    cout << "30000]";
+    for(int i = 1; i <= 100; ++i)
+    {
+        for(int j = i; j <= 100; ++j)
+        {
+            for(int k = 1; k <= i; ++k)
+                printf("%d %d %d:%lld %lld\n", i, j, k, baoli(i,j,k), calc(i,j,k));
+        }
+    }
 	return 0;
 }
