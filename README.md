@@ -1,4 +1,21 @@
-﻿# 记录
+﻿
+51nod - [51Nod](https://www.51nod.com/index.html)<br>
+atcoder - [AtCoder](http://atcoder.jp/)<br>
+bzoj - [大视野在线测评](https://www.lydsy.com/JudgeOnline/wttl/wttl.php)<br>
+codeforces - [CodeForces](http://codeforces.com/)<br>
+codevs - [CODEVS](http://codevs.cn/)<br>
+hdu - [杭州电子科技大学OJ](http://acm.hdu.edu.cn/)<br>
+luogu - [洛谷](https://www.luogu.org/)<br>
+noi_openjudge - [NOI OpenJudge](http://noi.openjudge.cn/)<br>
+poj - [北京大学 PKU JudgeOnline](http://poj.org/)<br>
+sznoi - [苏州NOI](http://oi.xhsy.sipedu.org/oj/)<br>
+tyvj - [Tyvj](http://www.tyvj.cn/)<br>
+tzhsoj - [TzhsOJ(自家OJ)](http://10.208.93.158/)<br>
+tzoj - [台州学院在线程序设计综合实验平台](http://acm.tzc.edu.cn/acmhome/welcome.do?method=index)<br>
+uva - [UVa Online Judge](http://uva.onlinejudge.org/)<br>
+ybt - [信息学奥赛一本通](http://ybt.ssoier.cn:8088/)<br>
+
+# 记录
 
 ## 动态规划DP
 ### 背包
