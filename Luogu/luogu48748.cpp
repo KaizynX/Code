@@ -10,17 +10,18 @@ int a[Maxn][Maxn];
 inline void read(int&);
 void write(int);
 inline void init();
+inline void print();
 
 inline void operate(int ox, int oy, int r, int z)
 {
 	if(r == 0) return;
-	int x[6], y[6], len = r*2+1, tmp[5];
+	int x[6], y[6], tmp[5];
 	x[0] = ox-r; y[0] = oy-r;
 	x[5] = ox+r; y[5] = oy+r;
 
-	for(int i = 1; i <= len/2; ++i)
+	for(int i = 1; i <= r; ++i)
 	{
-		for(int j = i; j <= len-i; ++j)
+		for(int j = i; j <= r*2+1-i; ++j)
 		{
 			x[1] = x[0]+i-1; y[1] = y[0]+j-1;
 			x[2] = x[0]+j-1; y[2] = y[5]-i+1;
@@ -44,13 +45,15 @@ int main()
 		read(x); read(y); read(r); read(z);
 		operate(x, y, r, z);
 	}
-	for(int i = 1; i <= n; ++i)
-	{
+	print();
+	return 0;
+}
+
+inline void print()
+{
+	for(int i = 1; i <= n; ++i, putchar('\n'))
 		for(int j = 1; j <= n; ++j)
 			write(a[i][j]), putchar(' ');
-		putchar('\n');
-	}
-	return 0;
 }
 
 inline void init()
