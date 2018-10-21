@@ -3,7 +3,7 @@
 using namespace std;
 
 const int Maxn = 5e3+7;
-const int INF = 1e18;
+const double INF = 1e18;
 
 int n, cnt, vis[Maxn];
 double ans, dis[Maxn];
@@ -29,21 +29,20 @@ inline void read(int &x)
 
 inline void prim()
 {
-	fill(dis, dis+n+1, -1);
-	dis[0] = INF;
+	fill(dis, dis+n+1, INF);
 	dis[1] = 0;
-	for(int t = 1; t < n; ++t)
+	for(int t = 1; t <= n; ++t)
 	{
 		int mini = 0;
 		for(int i = 1; i <= n; ++i)
-			if(dis[i] != -1 && !vis[i] && dis[i] < dis[mini])
+			if(!vis[i] && dis[i] < dis[mini])
 				mini = i;
 
-		vis[i] = 1;
+		vis[mini] = 1;
+        ans += dis[mini];
+
 		for(int i = 1; i <= n; ++i)
-		{
-			if(!vis[i])
-		}
+			if(!vis[i]) dis[i] = min(dis[i], calc(mini, i));
 	}
 }
 
