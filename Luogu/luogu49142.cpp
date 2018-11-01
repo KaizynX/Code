@@ -11,7 +11,7 @@ char s[Maxn];
 struct Num
 {
 	long double v; // v (0, 1]
-	int weishu;
+	long long weishu;
 	Num(){ v = 0; weishu = 1; }
 	Num(int num) { *this = num; }
 
@@ -55,7 +55,7 @@ int main()
 	while(Q--)
 	{
 		scanf("%d", &a);
-		gets(s);
+		scanf("%s", s);
 		Num cur = qpow(a, 1ll*(1+a)*a/2);
 #ifdef DEBUG
 		cout << cur.v << " " << cur.weishu << endl;
@@ -67,7 +67,7 @@ int main()
 			cout << cur.v << " " << cur.weishu << endl;
 #endif
 		}
-		printf("%d\n", cur.weishu);
+		printf("%lld\n", cur.weishu);
 	}
 	return 0;
 }
