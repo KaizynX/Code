@@ -5,38 +5,38 @@
 #include <iostream>
 #include <algorithm>
 using namespace std;
-//¸ß¾«¶ÈÑ¹Î»
+//é«˜ç²¾åº¦å‹ä½
 struct BigInteger
 {
-	static const int BASE = 1e4; // % ÏÂÀ´Ò»¸öµ¥Î»¾ÍÊÇ 0 ~ 9999
-	static const int WIDTH = 4;  // Ò»¸öµ¥Î»¿í¶È
+	static const int BASE = 1e4; // % ä¸‹æ¥ä¸€ä¸ªå•ä½å°±æ˜¯ 0 ~ 9999
+	static const int WIDTH = 4;  // ä¸€ä¸ªå•ä½å®½åº¦
 
 	vector<int> v;
-	bool tag = 0 ;                // ·ûºÅÎ» 0 +  1 -
+	bool tag = 0 ;                // ç¬¦å·ä½ 0 +  1 -
 
-	//¹¹Ôìº¯Êı ¸³ÖµÔËËã·û±»ÖØÔØ
+	//æ„é€ å‡½æ•° èµ‹å€¼è¿ç®—ç¬¦è¢«é‡è½½
 	BigInteger( long long num = 0 ) { *this = num; }
 	BigInteger( const string &str ) { *this = str; }
 
-	//ÖØÔØ¸³ÖµÔËËã·û long long °æ±¾
+	//é‡è½½èµ‹å€¼è¿ç®—ç¬¦ long long ç‰ˆæœ¬
 	BigInteger operator = (long long num)
 	{
 		v.clear();
 		if(num < 0)
 		{
 			tag = true;
-			num = - num; // Ê¹Ëü×ª»¯ÎªÕıÊı
+			num = - num; // ä½¿å®ƒè½¬åŒ–ä¸ºæ­£æ•°
 		}
 		else tag = false;
-		//Ê¹ÓÃ do while ·ÀÖ¹ num == 0
+		//ä½¿ç”¨ do while é˜²æ­¢ num == 0
 		do{
-			// ÈçÏÂÊÇÇ¿ÖÆÀàĞÍ×ª»» (ÒòÎª¿´²»Ë¬Waring)
+			// å¦‚ä¸‹æ˜¯å¼ºåˆ¶ç±»å‹è½¬æ¢ (å› ä¸ºçœ‹ä¸çˆ½Waring)
 			v.push_back( static_cast<int>(num % BASE) );
 			num /= BASE;
 		}while(num > 0);
 		return *this;
 	}
-	//ÖØÔØ¸³ÖµÔËËã·û string °æ±¾
+	//é‡è½½èµ‹å€¼è¿ç®—ç¬¦ string ç‰ˆæœ¬
 	BigInteger operator = (const string &former_str)
 	{
 		string str;
@@ -44,15 +44,15 @@ struct BigInteger
 		if(former_str[0] == '-')
 		{
 			tag = true;
-			str = former_str.substr(1); // È¥µôµÚÒ»Î»
+			str = former_str.substr(1); // å»æ‰ç¬¬ä¸€ä½
 		}
 		else
 		{
 			tag = false;
 			str = former_str;
 		}
-		/* len µÄÉñÆæÔËËãÊ¹Æä±£Ö¤ºÏÀí
-		 * strlen  len  (ÉèkÎª³£Êı)
+		/* len çš„ç¥å¥‡è¿ç®—ä½¿å…¶ä¿è¯åˆç†
+		 * strlen  len  (è®¾kä¸ºå¸¸æ•°)
 		 *  k*B-1   k
 		 *  k*B     k
 		 *  k*B+1   k               */
@@ -60,33 +60,33 @@ struct BigInteger
 		for(int i = 0; i < len; ++i)
 		{
 			int end = str.length() - i * WIDTH;
-			// ´æµ½×î¸ßÎ»Ê± i = len-1
+			// å­˜åˆ°æœ€é«˜ä½æ—¶ i = len-1
 			int start = max(head, end - WIDTH);
-			/* sscanf ´Ó char[] ÖĞ scanf
-			 * str.substr(start, length) ÔÚstrÖĞ´Óstart¿ªÊ¼½ØÈ¡³¤¶ÈlengthµÄ×Ö·û´®
-			 * .c_str ½« string ×ª»¯Îª char[]                                  */
+			/* sscanf ä» char[] ä¸­ scanf
+			 * str.substr(start, length) åœ¨strä¸­ä»startå¼€å§‹æˆªå–é•¿åº¦lengthçš„å­—ç¬¦ä¸²
+			 * .c_str å°† string è½¬åŒ–ä¸º char[]                                  */
 			sscanf( str.substr(start, end-start).c_str(), "%d", &tmp);
 			v.push_back(tmp);
 		}
 		return *this;
 	}
 
-	// ÖØÔØ±È½ÏÔËËã·û
+	// é‡è½½æ¯”è¾ƒè¿ç®—ç¬¦
 	bool operator < (const BigInteger &b)const
 	{
-		if(tag != b.tag)                   // ±È½Ï·ûºÅ
-			return tag > b.tag;            // 1 > 0 <==> ¸º < Õı
-		if(tag && b.tag)                   // ¸ºÊı±È½Ï,½á¹ûÏà·´
+		if(tag != b.tag)                   // æ¯”è¾ƒç¬¦å·
+			return tag > b.tag;            // 1 > 0 <==> è´Ÿ < æ­£
+		if(tag && b.tag)                   // è´Ÿæ•°æ¯”è¾ƒ,ç»“æœç›¸å
 			return ( -b < -*this );
 
-		if(v.size() != b.v.size())         // ±È½Ï³¤¶È
+		if(v.size() != b.v.size())         // æ¯”è¾ƒé•¿åº¦
 			return v.size() < b.v.size();
-		for(int i = v.size()-1; i>=0; --i) // ´Ó×î¸ßÎ»¿ªÊ¼±È
+		for(int i = v.size()-1; i>=0; --i) // ä»æœ€é«˜ä½å¼€å§‹æ¯”
 		{
 			if(v[i] != b.v[i])
 				return v[i] < b.v[i];
 		}
-		return false;                      //ÏàµÈ
+		return false;                      //ç›¸ç­‰
 	}
 
 	bool operator >  (const BigInteger &b) const { return b < *this; }
@@ -95,8 +95,8 @@ struct BigInteger
 	bool operator != (const BigInteger &b) const { return b < *this || *this < b; }
 	bool operator == (const BigInteger &b) const { return !(b < *this) && !(*this <b); }
 
-	// ÖØÔØËÄÔòÔËËã·û
-	// ¸ß¾«¶È & µÍ¾«¶È
+	// é‡è½½å››åˆ™è¿ç®—ç¬¦
+	// é«˜ç²¾åº¦ & ä½ç²¾åº¦
 	/*
 	BigInteger operator * (const int b) const
 	{
@@ -115,20 +115,20 @@ struct BigInteger
 		return *this % b;
 	}
 	*/
-	// ¸ß¾«¶È & ¸ß¾«¶È
+	// é«˜ç²¾åº¦ & é«˜ç²¾åº¦
 	BigInteger operator + (const BigInteger &b) const
 	{
-		if(  tag && !b.tag ) return ( b - (-*this) ); // ¸º + Õı --> Õı - (-¸º)
-		if( !tag &&  b.tag ) return ( *this - (-b) ); // Õı + ¸º --> Õı - (-¸º)
+		if(  tag && !b.tag ) return ( b - (-*this) ); // è´Ÿ + æ­£ --> æ­£ - (-è´Ÿ)
+		if( !tag &&  b.tag ) return ( *this - (-b) ); // æ­£ + è´Ÿ --> æ­£ - (-è´Ÿ)
 		BigInteger res;
 		res.v.clear();
-		if(tag && b.tag) res.tag = true;              // ¸º + ¸º
+		if(tag && b.tag) res.tag = true;              // è´Ÿ + è´Ÿ
 		else res.tag = false;
-		int g = 0;                                 // gÎª0»ò1
-		// ÒÔÏÂÎª Õı + Õı
+		int g = 0;                                 // gä¸º0æˆ–1
+		// ä»¥ä¸‹ä¸º æ­£ + æ­£
 		for(unsigned i = 0; ; ++i)
 		{
-			// µ±½øÎ»È«½øÁË,Ïà¼ÓµÄÁ½¸öÊıµÄÃ¿Ò»Î»¶¼¼ÓÍêÁË break
+			// å½“è¿›ä½å…¨è¿›äº†,ç›¸åŠ çš„ä¸¤ä¸ªæ•°çš„æ¯ä¸€ä½éƒ½åŠ å®Œäº† break
 			if(g == 0 && i >= v.size() && i >= b.v.size())
 				break;
 			int tmp = g;
@@ -140,24 +140,24 @@ struct BigInteger
 		return res;
 	}
 
-	// Ò»Ôª - ÔËËã·û
+	// ä¸€å…ƒ - è¿ç®—ç¬¦
 	BigInteger operator - ()const
 	{
 		BigInteger res(*this);
-		res.tag = ! tag; // ·ûºÅÎ»È¡·´
+		res.tag = ! tag; // ç¬¦å·ä½å–å
 		return res;
 	}
 
 	BigInteger operator - (const BigInteger &b)const
 	{
-		if( !(!tag && !b.tag) ) return ( *this + (-b) ); // Ö»Òª²»ÊÇ Õı - Õı
+		if( !(!tag && !b.tag) ) return ( *this + (-b) ); // åªè¦ä¸æ˜¯ æ­£ - æ­£
 		BigInteger res;
 		res.v.clear();
-		// ×ª»¯Îª ´ó ¼õ Ğ¡
+		// è½¬åŒ–ä¸º å¤§ å‡ å°
 		if(*this < b) return -( b - *this );
-		// ÒÔÏÂÎª Õı - Õı
+		// ä»¥ä¸‹ä¸º æ­£ - æ­£
 		res.tag = false;
-		int g = 0; // g Îª0»ò-1
+		int g = 0; // g ä¸º0æˆ–-1
 		for(unsigned i = 0; ; ++i)
 		{
 			if(g == 0 && i >= v.size() && i >= b.v.size())
@@ -169,7 +169,7 @@ struct BigInteger
 			if(tmp < 0) tmp += BASE;
 			res.v.push_back( tmp );
 		}
-		// È¥µô×î¸ßÎ»µÄ0,×îĞ¡Îª0
+		// å»æ‰æœ€é«˜ä½çš„0,æœ€å°ä¸º0
 		while(!res.v.back() && res.v.size()>1)
 			res.v.pop_back();
 		return res;
@@ -192,25 +192,25 @@ struct BigInteger
 		if(res.v.back() ==0 )
 			res.v.pop_back();
 
-		res.tag = tag ^ b.tag; // ^Òì»ò
+		res.tag = tag ^ b.tag; // ^å¼‚æˆ–
 
 		return res;
 	}
 
 	BigInteger operator / (const BigInteger &b)const
 	{
-		BigInteger divisor,dividend(b),res,tmp;             // ³ıÊı ±»³ıÊı ½á¹û
+		BigInteger divisor,dividend(b),res,tmp;             // é™¤æ•° è¢«é™¤æ•° ç»“æœ
 		divisor.v.clear();
 		res.v.clear();
 		divisor.tag = false;
-		dividend.tag = false;                               // ×ª»¯ÎªÕı
+		dividend.tag = false;                               // è½¬åŒ–ä¸ºæ­£
 		bool res_init = false;
 		int l, r, mid ,need;
-		for(int i = v.size() - 1; i >= 0; --i)          // ´Ó×î¸ßÎ»¿ªÊ¼
+		for(int i = v.size() - 1; i >= 0; --i)          // ä»æœ€é«˜ä½å¼€å§‹
 		{
-			divisor.v.insert(divisor.v.begin(), v[i] ); // ²åÈëµÄÊÇµÍÎ»,²åµ½Ç°Ãæ
+			divisor.v.insert(divisor.v.begin(), v[i] ); // æ’å…¥çš„æ˜¯ä½ä½,æ’åˆ°å‰é¢
 			if(divisor < dividend) continue;
-			// ¶ş·Ö
+			// äºŒåˆ†
 			l = 0; r = BASE - 1, need = -1;
 			while(l <= r)
 			{
@@ -233,11 +233,11 @@ struct BigInteger
 			}
 			divisor -= dividend * need;
 			res.v[i] = need;
-			/*  ¼õ·¨,Ğ§ÂÊµÍÏÂ
+			/*  å‡æ³•,æ•ˆç‡ä½ä¸‹
 			while( divisor >= b )
 			{
 				divisor -= b;
-				if(!res_init)                           // res.vĞèÒª³õÊ¼»¯
+				if(!res_init)                           // res.véœ€è¦åˆå§‹åŒ–
 				{
 					res.v.resize(i + 1, 0);
 					res_init = true;
@@ -248,28 +248,28 @@ struct BigInteger
 		}
 		// if res == 0
 		if(!res.v.size()) res = 0;
-		res.tag = tag ^ b.tag; // ^Òì»ò
+		res.tag = tag ^ b.tag; // ^å¼‚æˆ–
 		return res;
 	}
 
 	BigInteger operator %  (const BigInteger &b) const
 	{ 
-		BigInteger p_a, p_b, res;   // °Ñ this ºÍ b ×ª»¯ÎªÕı
+		BigInteger p_a, p_b, res;   // æŠŠ this å’Œ b è½¬åŒ–ä¸ºæ­£
 		p_a = (*this < 0 ? -*this : *this);
 		p_b = (b < 0 ? -b : b);
 		res = p_a - p_a / p_b * p_b;
-		res.tag = tag;              // ½á¹ûµÄÕı¸ºÓëthisÏàÍ¬
+		res.tag = tag;              // ç»“æœçš„æ­£è´Ÿä¸thisç›¸åŒ
 		return res;
 	}
 
-	// À©Õ¹
+	// æ‰©å±•
 	BigInteger operator ++ () { *this += 1; return *this; }
 	BigInteger operator -- () { *this -= 1; return *this; }
-	BigInteger operator += (const BigInteger &b) { *this = *this + b; return *this; }
-	BigInteger operator -= (const BigInteger &b) { *this = *this - b; return *this; }
-	BigInteger operator *= (const BigInteger &b) { *this = *this * b; return *this; }
-	BigInteger operator /= (const BigInteger &b) { *this = *this / b; return *this; }
-	BigInteger operator %= (const BigInteger &b) { *this = *this % b; return *this; }
+	BigInteger operator += (const BigInteger &b) { return *this = *this+b; }
+	BigInteger operator -= (const BigInteger &b) { return *this = *this-b; }
+	BigInteger operator *= (const BigInteger &b) { return *this = *this*b; }
+	BigInteger operator /= (const BigInteger &b) { return *this = *this/b; }
+	BigInteger operator %= (const BigInteger &b) { return *this = *this%b; }
 
 	/*
 	void print ()const
@@ -284,24 +284,24 @@ struct BigInteger
 	*/
 };
 
-// ÖØÔØ >> ÔËËã·û
+// é‡è½½ >> è¿ç®—ç¬¦
 istream& operator >> (istream &in, BigInteger &bigint)
 {
 	string str;
-	if( in >> str )   // ³É¹¦¶ÁÈëstr
-		bigint = str; // ÖØÔØ¹ıµÄ¸³ÖµÔËËã·û
+	if( in >> str )   // æˆåŠŸè¯»å…¥str
+		bigint = str; // é‡è½½è¿‡çš„èµ‹å€¼è¿ç®—ç¬¦
 	return in;
 }
 
-// ÖØÔØ << ÔËËã·û
+// é‡è½½ << è¿ç®—ç¬¦
 ostream& operator << (ostream &out, BigInteger &bigint)
 {
-	if(bigint.tag) out << "-" ;                  // ¸ººÅ
-	out<< bigint.v.back();                       // Ö±½ÓÊä³ö×î¸ßÎ»
-	for(int i( bigint.v.size()-2 ); i >= 0; --i) // ×î¸ßÎ»ÒÑ¾­Êä³ö,¹Ê-2¿ªÊ¼
+	if(bigint.tag) out << "-" ;                  // è´Ÿå·
+	out<< bigint.v.back();                       // ç›´æ¥è¾“å‡ºæœ€é«˜ä½
+	for(int i( bigint.v.size()-2 ); i >= 0; --i) // æœ€é«˜ä½å·²ç»è¾“å‡º,æ•…-2å¼€å§‹
 	{
-		char buf[10];                            // ¶¨ÒåÁÙÊ±µÄ×Ö·ûÊı×é
-		sprintf(buf, "%04d", bigint.v[i]);       // sprintf ÓÃ printf ÊäÈëµ½ char[] ÖĞ
+		char buf[10];                            // å®šä¹‰ä¸´æ—¶çš„å­—ç¬¦æ•°ç»„
+		sprintf(buf, "%04d", bigint.v[i]);       // sprintf ç”¨ printf è¾“å…¥åˆ° char[] ä¸­
 		for(unsigned j = 0; j < strlen(buf); ++j)
 			out << buf[j];
 	}
@@ -316,7 +316,7 @@ BigInteger abs (const BigInteger &a)
 BigInteger sqrt (const BigInteger &a)
 {
 	BigInteger l, r(a), mid, power_value;
-	// ¶ş·ÖÕÒ´ğ°¸
+	// äºŒåˆ†æ‰¾ç­”æ¡ˆ
 	while(l <= r)
 	{
 		mid = (l + r) / 2;
@@ -325,7 +325,7 @@ BigInteger sqrt (const BigInteger &a)
 		else if(power_value < a ) l = mid + 1;
 		else r = mid - 1;                         // power_value > *this
 	}
-	// ÏòÏÂÈ¡Õûreturn min(l, r)
+	// å‘ä¸‹å–æ•´return min(l, r)
 	return l < r ? l : r;
 }
 
