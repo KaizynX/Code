@@ -1,16 +1,12 @@
+#include <iostream>
 #include <bits/stdc++.h>
 
 using namespace std;
 
-int a, b;
-vector<int> v;
-
 int main()
 {
+    int a, b;
     cin >> a >> b;
-    v.emplace_back(a);
-    v.emplace_back(b);
-    for(auto i : v) cout << i << endl;
-    system("pause");
+    cout << a+b << endl;
     return 0;
 }
