@@ -16,12 +16,14 @@ void GetNext(const string &s, int *_nex)
     int k = -1, j = 0;
     while (j < s.length()) {
         if (k == -1 || s[k] == s[j]) {
-            // _nex[++j] = ++k;
+            _nex[++j] = ++k;
+            /*
             ++j; ++k;
             if (s[j] != s[k])
                 _nex[j] = k;
             else 
                 _nex[j] = _nex[k];
+            */
         } else {
             k = _nex[k];
         }

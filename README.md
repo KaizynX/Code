@@ -7,6 +7,7 @@ codevs - [CODEVS](http://codevs.cn/)<br>
 hdu - [杭州电子科技大学OJ](http://acm.hdu.edu.cn/)<br>
 luogu - [洛谷](https://www.luogu.org/)<br>
 noi_openjudge - [NOI OpenJudge](http://noi.openjudge.cn/)<br>
+nowcode - [牛客](https://www.nowcoder.com/)<br>
 poj - [北京大学 PKU JudgeOnline](http://poj.org/)<br>
 sznoi - [苏州NOI](http://oi.xhsy.sipedu.org/oj/)<br>
 tyvj - [Tyvj](http://www.tyvj.cn/)<br>
@@ -16,6 +17,8 @@ uva - [UVa Online Judge](http://uva.onlinejudge.org/)<br>
 ybt - [信息学奥赛一本通](http://ybt.ssoier.cn:8088/)<br>
 
 # 记录
+
+*懒得记了,断更*
 
 ## 动态规划DP
 ### 背包
@@ -40,7 +43,7 @@ luogu P1043 数字游戏<br>
 luogu P1220 关路灯<br>
 luogu P1025 数的划分 <br>
 luogu P1018 乘积最大<br>
-###最长公共子序列LCS
+### 最长公共子序列LCS
 luogu P1435 回文字串 <br>
 ### 单调队列
 luogu P1725 琪露诺<br>

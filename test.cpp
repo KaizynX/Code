@@ -1,12 +1,12 @@
-#include <iostream>
+#include <bits/stdc++.h>
 
 using namespace std;
 
-string str;
-
 int main()
 {
-    cin >> str;
-    cout << "look at here->" << str[str.length()] << "<-this" << endl;
+    int res = 1;
+    for (int i = 1; i <= 101; ++i)
+        res = (res*2)%26;
+    cout << res << endl;
     return 0;
 }
