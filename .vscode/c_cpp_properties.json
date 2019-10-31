@@ -4,12 +4,9 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:/MinGW/lib/gcc/mingw32/6.3.0/include/c++",
-                "C:/MinGW/lib/gcc/mingw32/6.3.0/include/c++/mingw32",
-                "C:/MinGW/lib/gcc/mingw32/6.3.0/include/c++/backward",
-                "C:/MinGW/lib/gcc/mingw32/6.3.0/include",
-                "C:/MinGW/lib/gcc/mingw32/6.3.0/include/c++/tr1",
-                "C:/MinGW/include"
+                "C:/MinGW/lib/gcc/mingw32/6.3.0/**",
+                "C:/MinGW/include/**",
+                "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.15.26726/include/**"
             ],
             "defines": [
                 "_DEBUG",
@@ -18,7 +15,7 @@
                 "__GNUC__=6",
                 "__cdecl=__attribute__((__cdecl__))"
             ],
-            "intelliSenseMode": "msvc-x64",
+            "intelliSenseMode": "gcc-x64",
             "browse": {
                 "path": [
                     "${workspaceFolder}/**",
@@ -30,8 +27,9 @@
                     "C:/MinGW/include"
                 ]
             },
-            "limitSymbolsToIncludedHeaders": true,
-            "databaseFilename": ""
+            "compilerPath": "C:/MinGW/bin/g++.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++11"
         }
     ],
     "version": 4
