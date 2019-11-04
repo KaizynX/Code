@@ -2,7 +2,7 @@
 
 using namespace std;
 
-const int N = 1e2+7;
+const int N = 1e5+7;
 const int MOD = 1e9+7;
 
 template <int _MOD> struct Mint
@@ -42,36 +42,31 @@ template <int _MOD> struct Mint
 };
 using mint = Mint<MOD>;
 
-int n;
-mint res;
-mint dp[N][4][4][4];
-// i'th i-1 i-2 i-3
+string str;
+mint f[N];
+mint res = 1;
 
 int main()
 {
-    cin >> n;
-    for (int i = 0; i < 4; ++i) {
-        for (int j = 0; j < 4; ++j) {
-            for (int k = 0; k < 4; ++k) {
-                dp[3][i][j][k] = 1;
-            }
-        }
+    cin >> str;
+    f[0] = 1; f[1] = 1; f[2] = 2; f[3] = 3;
+    for (int i = 2; i < N; ++i) {
+        f[i] = f[i-1]+f[i-2];
     }
-    /*
-    for (int i = 0; i < 4; ++i) dp[1][i] = 1, dp[2][i] = 4;
-    for (int i = 3; i <= n; ++i) {
-        for (int j = 0; j < 4; ++j) {
-            for (int k = 0; k < 4; ++k) {
-                dp[i][j] += dp[i-1][k];
-            }
+    for (int i = 0; i < (int)str.length(); ++i) {
+        if (str[i] == 'm' || str[i] == 'w') {
+            res = 0;
+            break;
         }
-        dp[i][1] -= dp[i-2][0]+dp[i-2][2];
-        dp[i][2] -= dp[i-2][0];
-    }
-    for (int j = 0; j < 4; ++j) {
-        res += dp[n][j];
+        if (str[i] != 'n' && str[i] != 'u') continue;
+        char c = str[i];
+        int cnt = 1;
+        while (i+1 < (int)str.length() && str[i+1] == c) {
+            ++i;
+            ++cnt;
+        }
+        res *= f[cnt];
     }
     cout << res << endl;
-    */
     return 0;
 }

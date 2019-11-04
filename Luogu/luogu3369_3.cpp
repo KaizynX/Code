@@ -31,12 +31,12 @@ struct Splay
         connect(x, r, rson);
         update(y); update(x);
     }
-    void splay(int at,int to) {
-        to = e[to].fa;
+    void splay(int at,int to = 0) {
+        // to = e[to].fa;
         int up;
         while((up = e[at].fa) != to) {
             if(e[up].fa != to)
-                identify(up) == identify(at) ? rotate(up) : rotate(at);
+                rotate(identify(up) == identify(at) ? up : at);
             rotate(at);
         }
     }
@@ -48,7 +48,7 @@ struct Splay
         int now = root, last = 0;
         while (now && e[now].v != v)
             last = now, now = e[now].ch[v > e[now].v];
-        splay((now ? now : last), root);
+        splay(now ? now : last);
         return now;
     }
     void insert(T v) {
@@ -58,7 +58,7 @@ struct Splay
             last = now, now = e[now].ch[v > e[now].v];
         if (now) ++e[now].cnt;
         else now = e[last].ch[v > e[last].v] = add_point(v, last);
-        splay(now, root);
+        splay(now);
     }
     void erase(T v) {
         int del = find(v);
@@ -70,13 +70,10 @@ struct Splay
             root = e[del].ch[1];
             e[root].fa = 0;
         } else {
-            int lef = e[del].ch[0];
-            while (e[lef].ch[1]) lef = e[lef].ch[1];
-            splay(lef, e[del].ch[0]);
-            int rig = e[del].ch[1];
-            connect(rig, lef, 1);
-            connect(lef, 0, 1);
-            update(lef);
+            int oldroot = root;
+            splay(nex(e[del].ch[0], 1));
+            connect(e[oldroot].ch[1], root, 1);
+            update(root);
         }
     }
     int rank(T v) { return e[e[find(v)].ch[0]].sum+1; }
@@ -88,27 +85,15 @@ struct Splay
             else if ((x -= e[e[now].ch[0]].sum) <= e[now].cnt) break;
             else x -= e[now].cnt, now = e[now].ch[1];
         }
-        splay(now, root);
+        splay(now);
         return e[now].v;
     }
-    T upper(T v) {
-        find(v);
-        int now = root;
-        T res = INF;
-        while (now) {
-            if (e[now].v > v && e[now].v < res) res = e[now].v;
-            now = e[now].ch[v >= e[now].v];
-        }
-        return res;
-    }
-    T lower(T v) {
-        find(v);
-        int now = root;
-        T res = -INF;
-        while (now) {
-            if (e[now].v < v && e[now].v > res) res = e[now].v;
-            now = e[now].ch[v > e[now].v];
-        }
+    // small 0, big 1
+    int nex(int x, int opt) { while (e[x].ch[opt]) x = e[x].ch[opt]; return x; }
+    T lower(T v, int opt) {
+        insert(v);
+        T res = e[nex(e[root].ch[opt], opt^1)].v;
+        erase(v);
         return res;
     }
     #undef root
@@ -166,11 +151,11 @@ int main()
                 putchar('\n');
                 break;
             case 5 :
-                write(tree.lower(x));
+                write(tree.lower(x, 0));
                 putchar('\n');
                 break;
             case 6 :
-                write(tree.upper(x));
+                write(tree.lower(x, 1));
                 putchar('\n');
                 break;
         }
