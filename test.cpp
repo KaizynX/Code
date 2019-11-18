@@ -2,10 +2,10 @@
 
 using namespace std;
 
+mt19937 rnd(time(NULL));
+
 int main()
 {
-    int a, b;
-    cin >> a >> b;
-    cout << sin(a+b) << endl;
+    cout << rnd() << endl;
     return 0;
 }
