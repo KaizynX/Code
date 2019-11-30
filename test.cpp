@@ -2,10 +2,12 @@
 
 using namespace std;
 
-mt19937 rnd(time(NULL));
+const int N = 1e5+7;
+
+int dp[N];
+set<int> s;
 
 int main()
 {
-    cout << rnd() << endl;
     return 0;
 }

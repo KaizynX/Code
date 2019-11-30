@@ -1,13 +1,14 @@
+#include <math.h>
 #include <stdio.h>
+#include <string.h>
+
+const int N = 1e2+7;
 
 int main()
 {
-    f(0, 0, n+1)
-}
-
-void f(int n, int m, int fuck)
-{
-    printf();
-    if (m < fuck) f(n, m+1, fuck);
-    else if (fuck-1 > 0) f(n+1, 0, fuck-1);
+    int a = 1;
+    int *b = a, *c = a;
+    b+c;
+    b < c;
+    return 0;
 }
