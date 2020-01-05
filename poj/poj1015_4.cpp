@@ -4,8 +4,6 @@
 #include <iostream>
 #include <algorithm>
 
-// #define DEBUG
-
 using namespace std;
 
 const int N = 2e2+7;
@@ -19,7 +17,8 @@ const int V = 4e2;
 #endif
 
 int T, n, m;
-int mem[M][D<<1], path[M][D<<1], *dp[M];
+int mem[M][D<<1], *dp[M];
+vector<int> path[M][D<<1];
 
 struct Node
 {
@@ -36,6 +35,7 @@ int main()
     while (cin >> n >> m && n|m) {
         memset(mem, -1, sizeof mem);
         dp[0][0] = 0;
+        path[0][0].clear();
         for (int i = 1; i <= n; ++i) {
             cin >> a[i];
             for (int j = min(m, i); j; --j) {
@@ -45,7 +45,8 @@ int main()
                     int tmp = dp[j-1][last]+a[i].p+a[i].d;
                     if (dp[j][v] == -1 || tmp > dp[j][v]) {
                         dp[j][v] = tmp;
-                        path[j][v] = i;
+                        path[j][v] = path[j-1][last];
+                        path[j][v].push_back(i);
                     }
                 }
             }
@@ -61,22 +62,19 @@ int main()
 #ifdef DEBUG
         cout << "DEBUG:" << resi << " " << dp[m][resi] << endl;
 #endif
-        vector<int> choose;
-        for (int i = m, j = resi; i; --i) {
-            int cur = path[i][j];
-            choose.push_back(cur);
+        for(int i = 0; i < (int)path[m][resi].size(); ++i) {
+            int cur = path[m][resi][i];
             sump += a[cur].p;
             sumd += a[cur].d;
-            j -= a[cur].p-a[cur].d;
         }
-        sort(choose.begin(), choose.end());
         cout << "Jury #" << ++T << endl
              << "Best jury has value " << sump
              << " for prosecution and value " << sumd
              << " for defence: " << endl;
-        for (int i = 0; i < (int)choose.size(); ++i)
-            cout << " " << choose[i];
+        for (int i = 0; i < (int)path[m][resi].size(); ++i)
+            cout << " " << path[m][resi][i];
         cout << endl << endl;
     }
     return 0;
 }
+

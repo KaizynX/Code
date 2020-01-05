@@ -1,14 +1,12 @@
-#include <math.h>
-#include <stdio.h>
-#include <string.h>
-
-const int N = 1e2+7;
-
+#include<stdio.h>
+#include<string.h>
 int main()
 {
     int a = 1;
-    int *b = a, *c = a;
-    b+c;
-    b < c;
+    switch(a) {
+        case 1 : printf("1\n");
+        case 2 : printf("2\n"); break;
+        default : printf("3\n");
+    }
     return 0;
 }
