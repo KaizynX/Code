@@ -4,11 +4,10 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:/MinGW/lib/gcc/mingw32/6.3.0/**",
-                "C:/MinGW/lib/gcc/mingw32/6.3.0/include/c++/**",
-                "C:/MinGW/lib/gcc/mingw32/6.3.0/include/c++/bits/**",
-                "C:/MinGW/include/**",
-                "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.15.26726/include/**"
+                "C:/MinGW/lib/gcc/mingw32/4.9.2/**",
+                "C:/MinGW/lib/gcc/mingw32/4.9.2/include/c++/**",
+                "C:/MinGW/lib/gcc/mingw32/4.9.2/include/c++/bits/**",
+                "C:/MinGW/include/**"
             ],
             "defines": [
                 "_DEBUG",
@@ -21,11 +20,11 @@
             "browse": {
                 "path": [
                     "${workspaceFolder}/**",
-                    "C:/MinGW/lib/gcc/mingw32/6.3.0/include/c++",
-                    "C:/MinGW/lib/gcc/mingw32/6.3.0/include/c++/mingw32",
-                    "C:/MinGW/lib/gcc/mingw32/6.3.0/include/c++/backward",
-                    "C:/MinGW/lib/gcc/mingw32/6.3.0/include",
-                    "C:/MinGW/lib/gcc/mingw32/6.3.0/include/c++/tr1",
+                    "C:/MinGW/lib/gcc/mingw32/4.9.2/include/c++",
+                    "C:/MinGW/lib/gcc/mingw32/4.9.2/include/c++/mingw32",
+                    "C:/MinGW/lib/gcc/mingw32/4.9.2/include/c++/backward",
+                    "C:/MinGW/lib/gcc/mingw32/4.9.2/include",
+                    "C:/MinGW/lib/gcc/mingw32/4.9.2/include/c++/tr1",
                     "C:/MinGW/include"
                 ]
             },
