@@ -1,8 +1,9 @@
-#include <bits/stdc++.h>
+#include <vector>
+#include <cstdio>
+#include <iostream>
+#include <algorithm>
 
 using namespace std;
-
-const int N = 1e5+7;
 
 struct Point
 {
@@ -65,21 +66,24 @@ struct Point
     friend double atan(const Point &p) { return atan2(p.y, p.x); }
 };
 
-int n;
-int vis[N], stk[N], tp;
-Point p[N];
+inline bool polar_angle1(const Point &p1, const Point &p2)
+{
+    double d1 = atan(p1), d2 = atan(p2); 
+    return d1 == d2 ? p1 < p2 : d1 < d2;
+}
+
+inline bool polar_angle2(const Point &p1, const Point &p2)
+{
+    auto tmp = p1*p2;
+    return tmp == 0 ? p1 < p2 : tmp > 0;
+}
+
+inline long long S(const Point &p1, const Point &p2, const Point &p3)
+{
+    return abs(p1.x*p2.y+p1.y*p3.x+p2.x*p3.y-p1.x*p3.y-p1.y*p2.x-p2.y*p3.x);
+}
 
 int main()
 {
-    cin >> n;
-    for (int i = 1; i <= n; ++i) {
-        cin >> p[i];
-        while (tp >= 2 && (p[stk[tp]]-p[stk[tp-1]])*(p[i]-p[stk[tp-1]]) <= 0) --tp;
-        if (tp) vis[stk[tp]] = 1;
-        stk[++tp] = i;
-    }
-    int res = 0;
-    for (int i = 2; i <= n; ++i) res += vis[i];
-    cout << res << endl;
     return 0;
 }
