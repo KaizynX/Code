@@ -4,9 +4,7 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:/MinGW/lib/gcc/mingw32/4.9.2/**",
-                "C:/MinGW/lib/gcc/mingw32/4.9.2/include/c++/**",
-                "C:/MinGW/lib/gcc/mingw32/4.9.2/include/c++/bits/**",
+                "C:/MinGW/lib/gcc/x86_64-w64-mingw32/9.2.0/**",
                 "C:/MinGW/include/**"
             ],
             "defines": [
@@ -20,12 +18,8 @@
             "browse": {
                 "path": [
                     "${workspaceFolder}/**",
-                    "C:/MinGW/lib/gcc/mingw32/4.9.2/include/c++",
-                    "C:/MinGW/lib/gcc/mingw32/4.9.2/include/c++/mingw32",
-                    "C:/MinGW/lib/gcc/mingw32/4.9.2/include/c++/backward",
-                    "C:/MinGW/lib/gcc/mingw32/4.9.2/include",
-                    "C:/MinGW/lib/gcc/mingw32/4.9.2/include/c++/tr1",
-                    "C:/MinGW/include"
+                    "C:/MinGW/lib/gcc/x86_64-w64-mingw32/9.2.0/**",
+                    "C:/MinGW/include/**"
                 ]
             },
             "compilerPath": "C:/MinGW/bin/g++.exe",

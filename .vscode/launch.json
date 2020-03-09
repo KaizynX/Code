@@ -13,7 +13,8 @@
                  "pause"
 
              ],
-             "preLaunchTask": "g++",
+             // Ctrl+Shift+B
+             //"preLaunchTask": "g++",
              "stopAtEntry": false,
              "cwd": "${workspaceFolder}",
              "environment": [],
