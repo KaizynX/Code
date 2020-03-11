@@ -75,7 +75,8 @@ struct SegmentTree
         push_down(i);
         if (tr[i<<1].mxl >= x) return query(x, i<<1);
         if (tr[i<<1].rig+tr[i<<1|1].lef >= x) return tr[i<<1].r-tr[i<<1].rig+1;
-        return query(x, i<<1|1);
+        if (tr[i<<1|1].mxl >= x) return query(x, i<<1|1);
+        return 0;
     }
 };
 
