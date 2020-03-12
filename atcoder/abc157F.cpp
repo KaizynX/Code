@@ -1,3 +1,10 @@
+/*
+ * @Author: Kaizyn
+ * @Date: 2020-03-03 18:57:54
+ * @LastEditors: Kaizyn
+ * @LastEditTime: 2020-03-12 14:24:42
+ * @FilePath: \Code\atcoder\abc157F.cpp
+ */
 #include <bits/stdc++.h>
 
 #define DEBUG
@@ -74,7 +81,7 @@ inline void solve()
         if (check(mid)) r = mid;
         else l = mid;
     }
-    printf("%.10f\n", l);
+    printf("%.7f\n", l);
 }
 
 int main()

@@ -2,7 +2,7 @@
  * @Author: Kaizyn
  * @Date: 2020-03-07 22:56:55
  * @LastEditors: Kaizyn
- * @LastEditTime: 2020-03-08 10:05:18
+ * @LastEditTime: 2020-03-12 10:22:20
  * @FilePath: \Code\atcoder\abc158E_3.cpp
  */
 #include <bits/stdc++.h>
@@ -65,8 +65,8 @@ int main()
     cin >> n >> p >> (s+1);
     if (p == 2 || p == 5) {
         long long res = 0;
-        for (int i = n-1; i >= 0; --i) {
-            if ((s[i]-'0')%p == 0) res += i+1;
+        for (int i = n; i; --i) {
+            if ((s[i]-'0')%p == 0) res += i;
         }
         cout << res << endl;
         return 0;
