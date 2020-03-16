@@ -2,7 +2,7 @@
  * @Author: Kaizyn
  * @Date: 2020-03-14 20:06:46
  * @LastEditors: Kaizyn
- * @LastEditTime: 2020-03-14 22:27:24
+ * @LastEditTime: 2020-03-15 21:12:22
  * @FilePath: \Code\poj\poj2115.cpp
  */
 #include <map>
@@ -34,6 +34,7 @@ signed main()
                   h = ((b-a)%p+p)%p,
                   res = p,
                   cur = 0;
+        // sqr*i < 2^k
         for (int i = 0; i < 1ll<<(k-k/2); ++i) {
             if (!mp.count(cur)) mp[cur] = i*sqr;
             cur = (cur+sqr*c%p)%p;
