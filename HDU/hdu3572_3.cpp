@@ -1,6 +1,11 @@
+/*
+ * @Author: Kaizyn
+ * @Date: 2020-03-19 20:48:36
+ * @LastEditTime: 2020-03-19 20:57:40
+ */
 #include <bits/stdc++.h>
 
-#define DEBUG
+// #define DEBUG
 
 using namespace std;
 
@@ -12,20 +17,21 @@ const double eps = 1e-11;
 typedef pair<int, int> pii;
 
 template <typename T>
-struct Dinic
+struct ISAP
 {
     struct EDGE
     {
         int v, nex;
         T w;
     } e[M<<1];
-    int tot, n;
-    int fir[N], vis[N], dep[N];
-    T work(const int &s, const int &t) {
-        T maxflow = 0, flow;
-        while (bfs(s, t))
-            while ((flow = dfs(s, t, INF)))
-                maxflow += flow;
+    int tot, n, s, t;
+    T maxflow;
+    int fir[N], gap[N], dep[N];
+    T work(const int &_s, const int &_t) {
+        s = _s; t = _t;
+        maxflow = 0;
+        bfs();
+        while (dep[s] < n) dfs(s, INF);
         return maxflow;
     }
     void init(const int &sz) {
@@ -37,65 +43,71 @@ struct Dinic
         e[tot] = {v, fir[u], w}; fir[u] = tot++;
         e[tot] = {u, fir[v], 0}; fir[v] = tot++;
     }
-    bool bfs(const int &s, const int &t) {
+    void bfs() {
         queue<int> q;
-        memset(dep, 0, sizeof(int)*(n+3));
-        q.push(s);
-        dep[s] = 1;
+        memset(dep, -1, sizeof(int)*(n+3));
+        memset(gap, 0, sizeof(int)*(n+3));
+        dep[t] = 0;
+        gap[0] = 1;
+        q.push(t);
         while (q.size()) {
             int u = q.front();
             q.pop();
             for (int i = fir[u], v; i != -1; i = e[i].nex) {
                 v = e[i].v;
-                if (dep[v] || !e[i].w) continue;
-                dep[v] = dep[u]+1;
-                if (v == t) return true;
+                if (dep[v] != -1) continue;
                 q.push(v);
+                dep[v] = dep[u]+1;
+                ++gap[dep[v]];
             }
         }
-        return false;
     }
-    T dfs(const int &u, const int &t, const T &flow) {
-        if (!flow || u == t) return flow;
-        T rest = flow, now;
+    T dfs(const int &u, const T &flow) {
+        if (u == t) {
+            maxflow += flow;
+            return flow;
+        }
+        T used = 0;
         for (int i = fir[u], v; i != -1; i = e[i].nex) {
             v = e[i].v;
-            if (dep[v] != dep[u]+1 || !e[i].w) continue;
-            now = dfs(v, t, min(rest, e[i].w));
-            if (!now) {
-                dep[v] = 0;
-            } else {
-                e[i].w -= now;
-                e[i^1].w += now;
-                rest -= now;
-                if (rest == flow) break;
+            if (!e[i].w || dep[v]+1 != dep[u]) continue;
+            T minf = dfs(v, min(e[i].w, flow-used));
+            if (minf) {
+                e[i].w -= minf;
+                e[i^1].w += minf;
+                used += minf;
             }
+            if (used == flow) return used;
         }
-        return flow-rest;
+        if (--gap[dep[u]] == 0) dep[s] = n+1;
+        ++gap[++dep[u]];
+        return used;
     }
 };
-Dinic<int> dinic;
+ISAP<int> isap;
 
 inline bool solve()
 {
     int n, m;
-    // cin >> n >> m;
+    static int vis[N];
     scanf("%d %d", &n ,&m);
-    dinic.init(500+n+1);
-    for (int i = 1; i <= 500; ++i) {
-        dinic.add_edge(0, i, m);
-    }
+    int src = 0, dst = 500+n+1;
+    memset(vis, 0, sizeof(int)*(500+n+3));
+    isap.init(500+n+1);
     int sum = 0;
     for (int i = 1, p, s, e; i <= n; ++i) {
-        // cin >> p >> s >> e;
         scanf("%d %d %d", &p, &s, &e);
+        isap.add_edge(src, 500+i, p);
         sum += p;
-        dinic.add_edge(500+i, 500+n+1, p);
         for (int j = s; j <= e; ++j) {
-            dinic.add_edge(j, 500+i, 1);
+            isap.add_edge(500+i, j, 1);
+            vis[j] = 1;
         }
     }
-    return dinic.work(0, 500+n+1) == sum;
+    for (int i = 1; i <= 500; ++i) if (vis[i]) {
+        isap.add_edge(i, dst, m);
+    }
+    return isap.work(0, dst) == sum;
 }
 
 int main()

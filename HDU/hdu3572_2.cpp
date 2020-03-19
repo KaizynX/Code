@@ -5,7 +5,7 @@
 using namespace std;
 
 const int N = 1e3+7;
-const int M = 1e6+7;
+const int M = 2e5+7;
 const int INF = 0x3f3f3f3f;
 const int MOD = 1e9+7;
 const double eps = 1e-11;
