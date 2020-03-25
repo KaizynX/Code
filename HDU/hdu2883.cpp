@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
- * @Date: 2020-03-19 20:12:35
- * @LastEditTime: 2020-03-22 16:20:29
+ * @Date: 2020-03-22 15:08:06
+ * @LastEditTime: 2020-03-22 16:32:48
  */
 #include <bits/stdc++.h>
 
@@ -9,8 +9,7 @@
 
 using namespace std;
 
-const int N = 1e4+7;
-const int M = 1e5+7;
+const int N = 1e3+7;
 const int MOD = 1e9+7;
 const double eps = 1e-7;
 const int INF = 0x3f3f3f3f;
@@ -39,7 +38,7 @@ struct ISAP
     void init(const int &_n) {
         n = _n;
         e.clear();
-        e.reserve(N<<2);
+        e.reserve(N<<4);
         memset(fir, -1, sizeof(int)*(n+3));
     }
     void add_edge(const int &u, const int &v, const T &w) {
@@ -87,19 +86,55 @@ struct ISAP
         return used;
     }
 };
+
+struct Node
+{
+    int s, n, e, t;
+    friend istream& operator >> (istream &is, Node &nd) {
+        return is >> nd.s >> nd.n >> nd.e >> nd.t;
+    }
+};
+
+int n, m;
+Node a[N];
+vector<int> d;
 ISAP<int> isap;
 
-int n, m, s, t;
+inline bool solve()
+{
+    d.clear();
+    for (int i = 1; i <= n; ++i) {
+        d.emplace_back(a[i].s);
+        d.emplace_back(a[i].e);
+    }
+    sort(d.begin(), d.end());
+    d.erase(unique(d.begin(), d.end()), d.end());
+    int tm = d.size()-1, s = tm+n+1, t = tm+n+2;
+    // time zone[i] =  [d[i-1], d[i]], i [1, tm]
+    // custom [tm+1, tm+n]
+    isap.init(tm+n+2);
+    int sum = 0;
+    for (int i = 1; i <= tm; ++i)
+        isap.add_edge(s, i, (d[i]-d[i-1])*m);
+    for (int i = 1; i <= n; ++i) {
+        a[i].s = lower_bound(d.begin(), d.end(), a[i].s)-d.begin();
+        a[i].e = lower_bound(d.begin(), d.end(), a[i].e)-d.begin();
+        for (int j = a[i].s+1; j <= a[i].e; ++j)
+            isap.add_edge(j, tm+i, INF);
+            // isap.add_edge(j, tm+i, (d[j]-d[j-1])*min(m, a[i].n));
+        isap.add_edge(tm+i, t, a[i].n*a[i].t);
+        sum += a[i].n*a[i].t;
+    }
+    return isap.work(s, t) == sum;
+}
 
 signed main()
 {
     ios::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
-    cin >> n >> m >> s >> t;
-    isap.init(n);
-    for (int i = 1, u, v, w; i <= m; ++i) {
-        cin >> u >> v >> w;
-        isap.add_edge(u, v, w);
+    d.reserve(N);
+    while (cin >> n >> m) {
+        for (int i = 1; i <= n; ++i) cin >> a[i];
+        cout << (solve() ? "Yes" : "No") << endl;
     }
-    cout << isap.work(s, t) << endl;
     return 0;
 }

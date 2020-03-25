@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
- * @Date: 2020-03-19 20:12:35
- * @LastEditTime: 2020-03-22 16:20:29
+ * @Date: 2020-03-21 19:19:58
+ * @LastEditTime: 2020-03-21 19:40:04
  */
 #include <bits/stdc++.h>
 
@@ -9,12 +9,13 @@
 
 using namespace std;
 
-const int N = 1e4+7;
-const int M = 1e5+7;
+const int N = 4e2+7;
+const int M = 2e3+7;
 const int MOD = 1e9+7;
 const double eps = 1e-7;
 const int INF = 0x3f3f3f3f;
 typedef pair<int, int> pii;
+const int dir[] = {0, -1, 0, 1, 0};
 
 template <typename T>
 struct ISAP
@@ -23,10 +24,8 @@ struct ISAP
     {
         int v, nex;
         T w;
-        EDGE(const int &_v, const int &_nex, const T &_w) : v(_v), nex(_nex), w(_w) {}
-    };
-    vector<EDGE> e;
-    int n, s, t;
+    } e[M<<1];
+    int tot, n, s, t;
     T maxflow;
     int fir[N], gap[N], dep[N];
     T work(const int &_s, const int &_t) {
@@ -36,15 +35,14 @@ struct ISAP
         while (dep[s] < n) dfs(s, INF);
         return maxflow;
     }
-    void init(const int &_n) {
-        n = _n;
-        e.clear();
-        e.reserve(N<<2);
+    void init(const int &sz) {
+        n = sz;
+        tot = 0;
         memset(fir, -1, sizeof(int)*(n+3));
     }
     void add_edge(const int &u, const int &v, const T &w) {
-        e.emplace_back(v, fir[u], w); fir[u] = e.size()-1;
-        e.emplace_back(u, fir[v], 0); fir[v] = e.size()-1;
+        e[tot] = {v, fir[u], w}; fir[u] = tot++;
+        e[tot] = {u, fir[v], 0}; fir[v] = tot++;
     }
     void bfs() {
         queue<int> q;
@@ -87,19 +85,43 @@ struct ISAP
         return used;
     }
 };
+
+int n;
+int a[25][25];
 ISAP<int> isap;
 
-int n, m, s, t;
+inline void solve()
+{
+    int sum = 0;
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            cin >> a[i][j];
+            sum += a[i][j];
+        }
+    }
+    int s = n*n+1, t = n*n+2;
+    isap.init(t);
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            if ((i+j)&1) {
+                isap.add_edge(s, i*n+j+1, a[i][j]);
+                for (int k = 0, nx, ny; k < 4; ++k) {
+                    nx = i+dir[k];
+                    ny = j+dir[k+1];
+                    if (nx < 0 || ny < 0 || nx >= n || ny >= n) continue;
+                    isap.add_edge(i*n+j+1, nx*n+ny+1, INF);
+                }
+            } else {
+                isap.add_edge(i*n+j+1, t, a[i][j]);
+            }
+        }
+    }
+    cout << sum-isap.work(s, t) << endl;
+}
 
 signed main()
 {
     ios::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
-    cin >> n >> m >> s >> t;
-    isap.init(n);
-    for (int i = 1, u, v, w; i <= m; ++i) {
-        cin >> u >> v >> w;
-        isap.add_edge(u, v, w);
-    }
-    cout << isap.work(s, t) << endl;
+    while (cin >> n) solve();
     return 0;
 }
