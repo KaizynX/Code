@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
- * @Date: 2020-03-27 23:01:13
- * @LastEditTime: 2020-03-31 16:45:01
+ * @Date: 2020-03-31 19:11:25
+ * @LastEditTime: 2020-04-01 18:50:27
  */
 #include <bits/stdc++.h>
 
@@ -10,15 +10,15 @@
 using namespace std;
 
 const int N = 2e5+7;
-const int MOD = 1e9+7;
+const int MOD = 998244353;
+const int INF = 0x3f3f3f3f;
 const double eps = 1e-7;
 const double PI = acos(-1);
-const int INF = 0x3f3f3f3f;
 typedef pair<int, int> pii;
 
 struct comp
 {
-    typedef double T; // maybe long double ?
+    typedef long double T; // maybe long double ?
     T real, imag;
     comp (const double &_real = 0, const double &_imag = 0) : real(_real), imag(_imag) {}
     friend comp operator + (const comp &c1, const comp &c2) { return comp(c1.real+c2.real, c1.imag+c2.imag); }
@@ -35,9 +35,10 @@ struct comp
 
 namespace FFT
 {
-    static const int SIZE = 262144+3;
+    static const int SIZE = (1<<18)+3;
     int len, bit;
     int rev[SIZE];
+    comp f[SIZE], g[SIZE];
     // #define comp complex<long double>
     void fft(comp a[], int flag = 1) {
         for (int i = 0; i < len; ++i)
@@ -55,58 +56,51 @@ namespace FFT
             }
         }
     }
-    template <typename TT>
-    void work(TT a[], const int &n) {
-        static comp f[SIZE];
+    template <class T>
+    void work(T a[], const int &n, T b[], const int &m) {
         len = 1; bit = 0;
-        while (len < n+n) len <<= 1, ++bit;
-        for (int i = 0; i < len; ++i)
-            rev[i] = (rev[i>>1]>>1)|((i&1)<<(bit-1));
+        while (len < n+m) len <<= 1, ++bit;
+        // multi-testcase
         for (int i = 0; i < n; ++i) f[i] = a[i];
         for (int i = n; i < len; ++i) f[i] = 0;
-        fft(f, 1);
-        for (int i = 0; i < len; ++i) f[i] *= f[i];
+        for (int i = 0; i < m; ++i) g[i] = b[i];
+        for (int i = m; i < len; ++i) g[i] = 0;
+        for (int i = 0; i < len; ++i)
+            rev[i] = (rev[i>>1]>>1)|((i&1)<<(bit-1));
+        fft(f, 1); fft(g, 1);
+        for (int i = 0; i < len; ++i) f[i] *= g[i];
         fft(f, -1);
-        for (int i = 0; i < n+n; ++i) a[i] = static_cast<TT>(f[i].real/len+.5);
+        for (int i = 0; i < n+m-1; ++i) f[i].real /= len;
     }
-};
-
-int n, m;
-int a[N];
-long long num[N], sum[N];
-
-inline void solve()
-{
-    memset(num, 0, sizeof num);
-    scanf("%d", &n);
-    for (int i = 0; i < n; ++i) {
-        scanf("%d", a+i);
-        ++num[a[i]];
-    }
-    sort(a, a+n);
-    m = a[n-1];
-    FFT::work(num, m+1);
-    m = m+m;
-    for (int i = 0; i < n; ++i) --num[a[i]+a[i]];
-    for (int i = 1; i <= m; ++i) num[i] /= 2, sum[i] = sum[i-1]+num[i];
-    #ifdef DEBUG
-    for (int i = 1; i <= m; ++i) printf("%lld%c", num[i], " \n"[i==m]);
-    #endif
-    long long res = 0, tot = n*(n-1ll)*(n-2ll)/6;
-    for (int i = 0; i < n; ++i) {
-        res += sum[m]-sum[a[i]];
-        res -= (n-i-1ll)*i;
-        res -= n-1;
-        res -= (n-i-1ll)*(n-i-2ll)/2;
-    }
-    printf("%.7f\n", 1.0*res/tot);
 }
+
+// give g[1, n) ask f[0, n)
+// f[i] = sigma f[i-1]*g[j] (1 <= j <= i)
+template <class T>
+void cdq_fft(T f[], T g[], const int &l, const int &r) // [l, r)
+{
+    if (r-l <= 1) return;
+    int mid = (l+r)>>1;
+    cdq_fft(f, g, l, mid);
+    FFT::work(f+l, mid-l, g, r-l);
+    #ifdef DEBUG
+    for (int i = l; i < mid; ++i) cout << f[i] << " \n"[i==mid-1];
+    for (int i = 0; i < r; ++i) cout << (int)(FFT::f[i].real+.5) << " \n"[i==r-1];
+    #endif
+    for (int i = mid; i < r; ++i)
+        (f[i] += (long long)(FFT::f[i-l].real+.5)%MOD) %= MOD;
+    cdq_fft(f, g, mid, r);
+}
+
+int n;
+int f[N], g[N];
 
 signed main()
 {
     ios::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
-    int T;
-    scanf("%d", &T);
-    while (T--) solve();
+    cin >> n;
+    for (int i = 1; i < n; ++i) cin >> g[i];
+    f[0] = 1; cdq_fft(f, g, 0, n);
+    for (int i = 0; i < n; ++i) cout << f[i] << " \n"[i==n-1];
     return 0;
 }

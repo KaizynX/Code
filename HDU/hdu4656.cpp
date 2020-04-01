@@ -1,20 +1,35 @@
 /*
  * @Author: Kaizyn
- * @Date: 2020-03-27 23:01:13
- * @LastEditTime: 2020-03-31 16:45:01
+ * @Date: 2020-03-31 17:01:49
+ * @LastEditTime: 2020-03-31 18:43:09
  */
 #include <bits/stdc++.h>
 
-#define DEBUG
+// #define DEBUG
 
 using namespace std;
 
 const int N = 2e5+7;
-const int MOD = 1e9+7;
+const int MOD = 313;
+const int INF = 0x3f3f3f3f;
 const double eps = 1e-7;
 const double PI = acos(-1);
-const int INF = 0x3f3f3f3f;
 typedef pair<int, int> pii;
+
+template <typename T, typename H>
+inline T qpow(const T &a, const H &p, const int &mo = MOD)
+{
+    long long res = 1, x = a;
+    for (H i = p; i; i >>= 1, x = x*x%mo)
+        if (i&1) res = res*x%mo;
+    return static_cast<T>(res);
+}
+
+template <typename T>
+inline T mul_inverse(const T &a, const int &mo = MOD)
+{
+    return qpow(a, mo-2);
+}
 
 struct comp
 {
@@ -33,9 +48,10 @@ struct comp
     friend comp conjugate(const comp &c) { return comp(c.real, -c.imag); }
 };
 
+// array [0, n)
 namespace FFT
 {
-    static const int SIZE = 262144+3;
+    static const int SIZE = (1<<18)+3;
     int len, bit;
     int rev[SIZE];
     // #define comp complex<long double>
@@ -55,58 +71,36 @@ namespace FFT
             }
         }
     }
-    template <typename TT>
-    void work(TT a[], const int &n) {
+    template <class T>
+    void work(T a[], const int &n) {
         static comp f[SIZE];
         len = 1; bit = 0;
         while (len < n+n) len <<= 1, ++bit;
-        for (int i = 0; i < len; ++i)
-            rev[i] = (rev[i>>1]>>1)|((i&1)<<(bit-1));
+        // multi-testcase
         for (int i = 0; i < n; ++i) f[i] = a[i];
         for (int i = n; i < len; ++i) f[i] = 0;
+        for (int i = 0; i < len; ++i) rev[i] = (rev[i>>1]>>1)|((i&1)<<(bit-1));
         fft(f, 1);
-        for (int i = 0; i < len; ++i) f[i] *= f[i];
+        for (int i = 0; i <= len; ++i) f[i] *= f[i];
         fft(f, -1);
-        for (int i = 0; i < n+n; ++i) a[i] = static_cast<TT>(f[i].real/len+.5);
+        for (int i = 0; i < n+n; ++i) a[i] = static_cast<T>(f[i].real/len+.5);
     }
-};
+}
 
-int n, m;
+int n;
 int a[N];
-long long num[N], sum[N];
 
 inline void solve()
 {
-    memset(num, 0, sizeof num);
-    scanf("%d", &n);
-    for (int i = 0; i < n; ++i) {
-        scanf("%d", a+i);
-        ++num[a[i]];
-    }
-    sort(a, a+n);
-    m = a[n-1];
-    FFT::work(num, m+1);
-    m = m+m;
-    for (int i = 0; i < n; ++i) --num[a[i]+a[i]];
-    for (int i = 1; i <= m; ++i) num[i] /= 2, sum[i] = sum[i-1]+num[i];
-    #ifdef DEBUG
-    for (int i = 1; i <= m; ++i) printf("%lld%c", num[i], " \n"[i==m]);
-    #endif
-    long long res = 0, tot = n*(n-1ll)*(n-2ll)/6;
-    for (int i = 0; i < n; ++i) {
-        res += sum[m]-sum[a[i]];
-        res -= (n-i-1ll)*i;
-        res -= n-1;
-        res -= (n-i-1ll)*(n-i-2ll)/2;
-    }
-    printf("%.7f\n", 1.0*res/tot);
+    FFT::work(a, n+1);
 }
 
 signed main()
 {
     ios::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
-    int T;
-    scanf("%d", &T);
-    while (T--) solve();
+    while (cin >> n && n) {
+        for (int i = 1; i <= n; ++i) cin >> a[i];
+        solve();
+    }
     return 0;
 }
