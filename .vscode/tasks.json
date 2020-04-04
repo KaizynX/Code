@@ -8,6 +8,7 @@
         "${fileDirname}/${fileBasenameNoExtension}.exe",
         "--std=c++11",
         "-Wall",
+        "-Wextra",
         "-fexec-charset=UTF-8",   // 处理mingw中文编码问题
         "-finput-charset=UTF-8",// 处理mingw中文编码问题
     ],    // 编译命令参数
