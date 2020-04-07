@@ -1,16 +1,16 @@
 /*
  * @Author: Kaizyn
- * @Date: 2020-03-31 17:01:49
- * @LastEditTime: 2020-04-07 20:30:29
+ * @Date: 2020-04-06 14:09:11
+ * @LastEditTime: 2020-04-06 14:41:41
  */
 #include <bits/stdc++.h>
 
-#define DEBUG
+// #define DEBUG
 
 using namespace std;
 
 const int N = 1e5+7;
-const int MOD = 1e6+3;
+const int MOD = 313;
 const int INF = 0x3f3f3f3f;
 const double eps = 1e-7;
 const double PI = acos(-1);
@@ -35,7 +35,7 @@ struct comp
 
 namespace MTT
 {
-    static const int SIZE = (1<<19)+7;
+    static const int SIZE = (1<<18)+7;
     int Mod = MOD;
     comp w[SIZE];
     int bitrev[SIZE];
@@ -57,7 +57,7 @@ namespace MTT
     {
         static int bit, L;
         static comp a[SIZE], b[SIZE];
-        static comp dfta[SIZE], dftb[SIZE];
+        static comp dfta[SIZE], dftb[SIZE], dftc[SIZE], dftd[SIZE];
 
         for (L = 1, bit = 0; L < n+m-1; ++bit, L <<= 1);
         for (int i = 0; i < L; ++i) bitrev[i] = bitrev[i >> 1] >> 1 | ((i & 1) << (bit - 1));
@@ -75,11 +75,13 @@ namespace MTT
             db = (a[i] - conjugate(a[j])) * comp(0, -.5);
             dc = (b[i] + conjugate(b[j])) * comp(.5, 0);
             dd = (b[i] - conjugate(b[j])) * comp(0, -.5);
-            dfta[j] = da*dc + da*dd*comp(0, 1);
-            dftb[j] = db*dc + db*dd*comp(0, 1);
+            dfta[j] = da * dc;
+            dftb[j] = da * dd;
+            dftc[j] = db * dc;
+            dftd[j] = db * dd;
         }
-        for (int i = 0; i < L; ++i) a[i] = dfta[i];
-        for (int i = 0; i < L; ++i) b[i] = dftb[i];
+        for (int i = 0; i < L; ++i) a[i] = dfta[i] + dftb[i] * comp(0, 1);
+        for (int i = 0; i < L; ++i) b[i] = dftc[i] + dftd[i] * comp(0, 1);
         fft(a, L), fft(b, L);
         for (int i = 0; i < L; ++i) {
             int da = (long long)(a[i].real / L + 0.5) % Mod;
@@ -92,63 +94,32 @@ namespace MTT
     }
 }
 
-template <typename T, typename H>
-inline T qpow(const T &a, const H &p, const int &mo = MOD)
+// give g[1, n) ask f[0, n)
+// f[i] = sigma f[i-j]*g[j] (1 <= j <= i)
+template <class T>
+void cdq_fft(T f[], T g[], const int &l, const int &r) // [l, r)
 {
-    long long res = 1, x = a;
-    for (H i = p; i; i >>= 1, x = x*x%mo)
-        if (i&1) res = res*x%mo;
-    return static_cast<T>(res);
+    if (r-l <= 1) return;
+    int mid = (l+r)>>1;
+    cdq_fft(f, g, l, mid);
+    MTT::work(f+l, mid-l, g, r-l);
+    for (int i = mid; i < r; ++i)
+        (f[i] += MTT::f[i-l]) %= MOD;
+    cdq_fft(f, g, mid, r);
 }
+// f[0] = 1; cdq_fft(f, g, 0, n);
 
-int n, b, c, d;
-int a[N];
-long long f[N], g[N<<1], p[N], fac[N], inv[N];
-
-void init()
-{
-    fac[0] = fac[1] = inv[0] = inv[1] = 1;
-    for (int i = 2; i < N; ++i) {
-        fac[i] = fac[i-1]*i%MOD;
-        inv[i] = (MOD-MOD/i)*inv[MOD%i]%MOD;
-    }
-    for (int i = 2; i < N; ++i) (inv[i] *= inv[i-1]) %= MOD;
-}
-
-inline void solve()
-{
-    for (int i = 0; i < n; ++i) {
-        f[i] = a[n-1-i]*fac[n-1-i]%MOD;
-        g[i] = qpow(d, i)*inv[i]%MOD;
-    }
-    MTT::work(f, n, g, n);
-    for (int i = 0; i < n; ++i) p[i] = MTT::f[n-1-i];
-    #ifdef DEBUG
-    for (int i = 0; i < n; ++i) cout << p[i] << " \n"[i==n-1];
-    #endif
-
-    for (int i = 0; i < n; ++i) {
-        f[i] = qpow(b, i)*qpow(c, 1ll*i*i)*p[i]%MOD*inv[i]%MOD;
-    }
-    for (int i = -n+1; i < n; ++i) {
-        g[i+(n-1)] = qpow(qpow(c, 1ll*i*i), MOD-2);
-    }
-    #ifdef DEBUG
-    for (int i = 0; i <= n; ++i) cout << f[i] << " \n"[i==n];
-    for (int i = 0; i <= n+n; ++i) cout << g[i] << " \n"[i==n+n];
-    #endif
-    MTT::work(f, n, g, n*2-1);
-    for (int i = 0; i < n; ++i)
-        cout << MTT::f[n-1+i]*qpow(c, 1ll*i*i)%MOD << endl;
-}
+int n;
+long long a[N], f[N];
 
 signed main()
 {
     ios::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
-    init();
-    while (cin >> n >> b >> c >> d) {
-        for (int i = 0; i < n; ++i) cin >> a[i];
-        solve();
+    while (cin >> n && n) {
+        for (int i = 1; i <= n; ++i) cin >> a[i], a[i] %= MOD;
+        for (int i = 1; i <= n; ++i) f[i] = 0;
+        f[0] = 1; cdq_fft(f, a, 0, n+1);
+        cout << f[n] << endl;
     }
     return 0;
 }

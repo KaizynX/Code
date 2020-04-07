@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
  * @Date: 2020-03-31 17:01:49
- * @LastEditTime: 2020-04-07 20:30:29
+ * @LastEditTime: 2020-04-07 20:45:48
  */
 #include <bits/stdc++.h>
 
@@ -103,7 +103,7 @@ inline T qpow(const T &a, const H &p, const int &mo = MOD)
 
 int n, b, c, d;
 int a[N];
-long long f[N], g[N<<1], p[N], fac[N], inv[N];
+long long f[N], g[N<<1], p[N], fac[N], inv[N], c2[N];
 
 void init()
 {
@@ -117,29 +117,24 @@ void init()
 
 inline void solve()
 {
-    for (int i = 0; i < n; ++i) {
+    long long pw = 1;
+    for (int i = 0; i < n; ++i, (pw *= d) %= MOD) {
         f[i] = a[n-1-i]*fac[n-1-i]%MOD;
-        g[i] = qpow(d, i)*inv[i]%MOD;
+        g[i] = pw*inv[i]%MOD;
     }
     MTT::work(f, n, g, n);
     for (int i = 0; i < n; ++i) p[i] = MTT::f[n-1-i];
-    #ifdef DEBUG
-    for (int i = 0; i < n; ++i) cout << p[i] << " \n"[i==n-1];
-    #endif
 
-    for (int i = 0; i < n; ++i) {
-        f[i] = qpow(b, i)*qpow(c, 1ll*i*i)*p[i]%MOD*inv[i]%MOD;
+    pw = 1;
+    for (int i = 0; i < n; ++i, (pw *= b) %= MOD) {
+        c2[i] = qpow(c, 1ll*i*i%(MOD-1));
+        f[i] = pw*c2[i]%MOD*p[i]%MOD*inv[i]%MOD;
+        g[i+(n-1)] = g[-i+(n-1)] = qpow(c2[i], MOD-2);
     }
-    for (int i = -n+1; i < n; ++i) {
-        g[i+(n-1)] = qpow(qpow(c, 1ll*i*i), MOD-2);
-    }
-    #ifdef DEBUG
-    for (int i = 0; i <= n; ++i) cout << f[i] << " \n"[i==n];
-    for (int i = 0; i <= n+n; ++i) cout << g[i] << " \n"[i==n+n];
-    #endif
+    // for (int i = -n+1; i < n; ++i) g[i+(n-1)] = qpow(qpow(c, 1ll*i*i), MOD-2);
     MTT::work(f, n, g, n*2-1);
     for (int i = 0; i < n; ++i)
-        cout << MTT::f[n-1+i]*qpow(c, 1ll*i*i)%MOD << endl;
+        cout << MTT::f[n-1+i]*c2[i]%MOD << endl;
 }
 
 signed main()

@@ -1,16 +1,16 @@
 /*
  * @Author: Kaizyn
- * @Date: 2020-03-31 17:01:49
- * @LastEditTime: 2020-04-07 20:30:29
+ * @Date: 2020-04-07 20:19:05
+ * @LastEditTime: 2020-04-07 20:22:49
  */
 #include <bits/stdc++.h>
 
-#define DEBUG
+// #define DEBUG
 
 using namespace std;
 
 const int N = 1e5+7;
-const int MOD = 1e6+3;
+const int MOD = 998244353;
 const int INF = 0x3f3f3f3f;
 const double eps = 1e-7;
 const double PI = acos(-1);
@@ -35,7 +35,7 @@ struct comp
 
 namespace MTT
 {
-    static const int SIZE = (1<<19)+7;
+    static const int SIZE = (1<<18)+7;
     int Mod = MOD;
     comp w[SIZE];
     int bitrev[SIZE];
@@ -92,63 +92,17 @@ namespace MTT
     }
 }
 
-template <typename T, typename H>
-inline T qpow(const T &a, const H &p, const int &mo = MOD)
-{
-    long long res = 1, x = a;
-    for (H i = p; i; i >>= 1, x = x*x%mo)
-        if (i&1) res = res*x%mo;
-    return static_cast<T>(res);
-}
-
-int n, b, c, d;
-int a[N];
-long long f[N], g[N<<1], p[N], fac[N], inv[N];
-
-void init()
-{
-    fac[0] = fac[1] = inv[0] = inv[1] = 1;
-    for (int i = 2; i < N; ++i) {
-        fac[i] = fac[i-1]*i%MOD;
-        inv[i] = (MOD-MOD/i)*inv[MOD%i]%MOD;
-    }
-    for (int i = 2; i < N; ++i) (inv[i] *= inv[i-1]) %= MOD;
-}
-
-inline void solve()
-{
-    for (int i = 0; i < n; ++i) {
-        f[i] = a[n-1-i]*fac[n-1-i]%MOD;
-        g[i] = qpow(d, i)*inv[i]%MOD;
-    }
-    MTT::work(f, n, g, n);
-    for (int i = 0; i < n; ++i) p[i] = MTT::f[n-1-i];
-    #ifdef DEBUG
-    for (int i = 0; i < n; ++i) cout << p[i] << " \n"[i==n-1];
-    #endif
-
-    for (int i = 0; i < n; ++i) {
-        f[i] = qpow(b, i)*qpow(c, 1ll*i*i)*p[i]%MOD*inv[i]%MOD;
-    }
-    for (int i = -n+1; i < n; ++i) {
-        g[i+(n-1)] = qpow(qpow(c, 1ll*i*i), MOD-2);
-    }
-    #ifdef DEBUG
-    for (int i = 0; i <= n; ++i) cout << f[i] << " \n"[i==n];
-    for (int i = 0; i <= n+n; ++i) cout << g[i] << " \n"[i==n+n];
-    #endif
-    MTT::work(f, n, g, n*2-1);
-    for (int i = 0; i < n; ++i)
-        cout << MTT::f[n-1+i]*qpow(c, 1ll*i*i)%MOD << endl;
-}
-
 signed main()
 {
-    ios::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
-    init();
-    while (cin >> n >> b >> c >> d) {
-        for (int i = 0; i < n; ++i) cin >> a[i];
-        solve();
-    }
+    // ios::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    int n, m;
+    static int a[N], b[N];
+    scanf("%d%d%d", &n, &m, &MTT::Mod), ++n, ++m;
+    for (int i = 0; i < n; ++i) scanf("%d", a + i);
+    for (int i = 0; i < m; ++i) scanf("%d", b + i);
+    MTT::work(a, n, b, m);
+    for (int i = 0; i < n+m-1; ++i) printf("%lld ", MTT::f[i]);
+    printf("\n");
+    return 0;
     return 0;
 }
