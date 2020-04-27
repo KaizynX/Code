@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
  * @Date: 2020-04-22 00:13:46
- * @LastEditTime: 2020-04-22 00:33:04
+ * @LastEditTime: 2020-04-23 20:02:52
  */
 #include <bits/stdc++.h>
 
@@ -38,9 +38,9 @@ inline void solve()
     for (int x = 2, now; x <= k*2; ++x) {
         now = n/2;
         // mina < x is ok
-        now += n/2-(upper_bound(mina+1, mina+n/2+1, x)-mina-1);
+        now += n/2-(lower_bound(mina+1, mina+n/2+1, x)-mina-1);
         // maxa >= x is ok
-        now += upper_bound(maxa+1, maxa+n/2+1, x)-maxa-1;
+        now += lower_bound(maxa+1, maxa+n/2+1, x)-maxa-1;
         now -= upper_bound(suma+1, suma+n/2+1, x)-lower_bound(suma, suma+n/2+1, x);
         res = min(res, now);
         #ifdef DEBUG
