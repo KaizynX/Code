@@ -1,11 +1,11 @@
 /*
  * @Author: Kaizyn
  * @Date: 2020-04-19 19:55:17
- * @LastEditTime: 2020-04-26 22:33:44
+ * @LastEditTime: 2020-04-28 16:21:15
  */
 #include <bits/stdc++.h>
 
-// #define DEBUG
+#define DEBUG
 
 using namespace std;
 
@@ -17,44 +17,30 @@ const double PI = acos(-1);
 typedef pair<int, int> pii;
 
 int n;
-int c[N], num[N], son[N], col[N];
+int c[N], num[N], col[N];
+long long res[N];
 vector<int> e[N];
 
-void get_son(const int &u, const int &fa) {
+inline long long calc(const int &x) {
+    return x*(x+1ll)/2;
+}
+
+void dfs(const int &u, const int &fa) {
     num[u] = 1;
-    son[u] = 0;
+    int tmp = col[c[u]];
     for (int &v : e[u]) if (v != fa) {
-        get_son(v, u);
+        col[c[u]] = 0;
+        dfs(v, u);
         num[u] += num[v];
-        if (num[v] > num[son[u]]) son[u] = v;
+        res[c[u]] -= calc(num[v]-col[c[u]]);
     }
-}
-
-void dfs(const int &u, const int &fa, const int &k) {
-    col[c[u]] += k;
-    for (int &v : e[u]) if (v != fa) {
-        dfs(v, u, k);
-    }
-}
-
-void treedp(const int &u, const int &fa, const int &op) {
-    for (int &v : e[u]) if (v != fa && v != son[u]) {
-        treedp(v, u, 1);
-    }
-    if (son[u]) treedp(v, u, 0);
-    for (int &v : e[u]) if (v != fa && v != son[u]) {
-        dfs(v, u, 1);
-    }
-    ++col[c[u]];
-    if (col[c[u]] == 1) {
-        ;
-    }
-    if (op) {
-        --col[c[u]];
-        for (int &v : e[u]) if (v != fa && v != son[u]) {
-            dfs(v, u, -1);
-        }
-    }
+    col[c[u]] = tmp+num[u];
+    #ifdef DEBUG
+    cout << u << ": ";
+    for (int i = 1; i <= n; ++i) cout << res[i] << " \n"[i==n];
+    cout << "   ";
+    for (int i = 1; i <= n; ++i) cout << col[i] << " \n"[i==n];
+    #endif
 }
 
 inline void solve()
@@ -66,8 +52,16 @@ inline void solve()
         e[u].emplace_back(v);
         e[v].emplace_back(u);
     }
-    get_son(1, 0);
-    treedp(1, 0, 0);
+    for (int i = 1; i <= n; ++i) {
+        res[i] = calc(n);
+    }
+    dfs(1, 0);
+    for (int i = 1; i <= n; ++i) {
+        res[i] -= calc(n-col[i]);
+    }
+    for (int i = 1; i <= n; ++i) {
+        cout << res[i] << endl;
+    }
 }
 
 signed main()
