@@ -12,7 +12,7 @@ const int INF = 0x3f3f3f3f;
 
 signed main() {
   ios::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
-  string s = "abs";
-  string().swap(s);
+  vector<int> v;
+  cout << (v.begin() == v.end()) << endl;
   return 0;
 }
