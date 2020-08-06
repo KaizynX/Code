@@ -1,25 +1,31 @@
 /*
  * @Author: Kaizyn
  * @Date: 2020-03-03 16:51:41
- * @LastEditTime: 2020-06-14 14:49:34
- */ 
-#include <bits/stdc++.h>
+ * @LastEditTime: 2020-08-03 22:59:46
+ */
+// MLE TEST
 
-// #define DEBUG
+#include <bits/stdc++.h>
 
 using namespace std;
 
-const double eps = 1e-7;
-const double PI = acos(-1);
-typedef pair<int, int> pii;
-const int MOD = 998244353;
-const int INF = 0x3f3f3f3f;
+const int N = 1e5 + 10;
+const int M = 1e7 + 10;
+const int K = 1e4;
 
-signed main() {
-  int x, y;
-  cin >> x >> y;
-  int g = __gcd(x, y);
-  x /= g; y /= g;
-  cout << x << " " << y << endl;
-  return 0;
+int n, q;
+int a[N];
+
+typedef long long ll;
+
+struct SegmentTree {
+  std::bitset<K> a[N<<1];
+} st;
+
+int main() {
+  // Sieve();
+  scanf("%d%d", &n, &q);
+  for (int i = 1; i <= n; ++i)
+    scanf("%d", &a[i]); // ft.Add(i, a[i]);
+  while (q--) {}
 }
