@@ -1,11 +1,11 @@
 /*
  * @Author: Kaizyn
  * @Date: 2020-08-05 20:57:30
- * @LastEditTime: 2020-08-07 15:25:39
+ * @LastEditTime: 2020-08-07 16:25:30
  */
 #include <bits/stdc++.h>
 
-// #define DEBUG
+#define DEBUG
 
 using namespace std;
 
@@ -17,76 +17,79 @@ const int INF = 0x3f3f3f3f;
 const int N = 2e4+7;
 const int NN = (int)log2(N)+3;
 
-template <typename T>
-struct ISAP {
-  struct EDGE {
-    int v, nex;
-    T w;
-    EDGE(const int &_v, const int &_nex, const T &_w) : v(_v), nex(_nex), w(_w) {}
-  };
-  vector<EDGE> e;
-  int n, s, t;
-  T maxflow;
-  int fir[N<<2], gap[N<<2], dep[N<<2];
-  T work(const int &_s, const int &_t) {
-    s = _s; t = _t;
-    maxflow = 0;
-    bfs();
-    while (dep[s] < n) dfs(s, INF);
-    return maxflow;
-  }
-  void init(const int &_n) {
-    n = _n;
-    e.clear();
-    e.reserve(N<<2);
-    memset(fir, -1, sizeof(int)*(n+3));
-  }
-  void add_edge(const int &u, const int &v, const T &w) {
-#ifdef DEBUG
-    printf("net-work edge(%d,%d,%d)\n", u, v, w);
-#endif
-    e.emplace_back(v, fir[u], w); fir[u] = e.size()-1;
-    e.emplace_back(u, fir[v], 0); fir[v] = e.size()-1;
-  }
-  void bfs() {
-    queue<int> q;
-    memset(dep, -1, sizeof(int)*(n+3));
-    memset(gap, 0, sizeof(int)*(n+3));
-    dep[t] = 0;
-    gap[0] = 1;
-    q.push(t);
-    while (q.size()) {
-      int u = q.front();
-      q.pop();
-      for (int i = fir[u], v; i != -1; i = e[i].nex) {
-        v = e[i].v;
-        if (dep[v] != -1) continue;
-        q.push(v);
-        dep[v] = dep[u]+1;
-        ++gap[dep[v]];
-      }
+struct FLOW{
+	struct edge{int to,w,nxt;};
+	vector<edge> a; int head[N],cur[N];
+	int n,s,t;
+	queue<int> q; bool inque[N];
+	int dep[N];
+	void ae(int x,int y,int w){ //add edge
+		a.push_back({y,w,head[x]});
+		head[x]=a.size()-1;
+	}
+  void clear() {
+    for (int i = 0; i < (int)a.size(); i += 2) {
+      a[i].w += a[i^1].w;
+      a[i^1].w = 0;
     }
   }
-  T dfs(const int &u, const T &flow) {
-    if (u == t) return maxflow += flow, flow;
-    T used = 0;
-    for (int i = fir[u], v; i != -1; i = e[i].nex) {
-      v = e[i].v;
-      if (!e[i].w || dep[v]+1 != dep[u]) continue;
-      T minf = dfs(v, min(e[i].w, flow-used));
-      if (minf) {
-        e[i].w -= minf;
-        e[i^1].w += minf;
-        used += minf;
-      }
-      if (used == flow) return used;
+  void modify_edge(const int &u, const int &v, const int &w) {
+    for (int i = head[u]; ~i; i = a[i].nxt) if (a[i].to == v) {
+      a[i].w = w;
+      a[i^1].w = 0;
+      break;
     }
-    if (--gap[dep[u]] == 0) dep[s] = n+1;
-    ++gap[++dep[u]];
-    return used;
+  }
+	bool bfs(){ //get dep[]
+		fill(dep,dep+n,INF); dep[s]=0;
+		copy(head,head+n,cur);
+		q=queue<int>(); q.push(s);
+		while(!q.empty()){
+			int x=q.front(); q.pop(); inque[x]=0;
+			for(int i=head[x];i!=-1;i=a[i].nxt){
+				int p=a[i].to;
+				if(dep[p]>dep[x]+1 && a[i].w){
+					dep[p]=dep[x]+1;
+					if(inque[p]==0){
+						inque[p]=1;
+						q.push(p);
+					}
+				}
+			}
+		}
+		return dep[t]!=INF;
+	}
+	int dfs(int x,int flow){ //extend
+		int now,ans=0;
+		if(x==t)return flow;
+		for(int &i=cur[x];i!=-1;i=a[i].nxt){
+			int p=a[i].to;
+			if(a[i].w && dep[p]==dep[x]+1)
+			if((now=dfs(p,min(flow,a[i].w)))){
+				a[i].w-=now;
+				a[i^1].w+=now;
+				ans+=now,flow-=now;
+				if(flow==0)break;
+			}
+		}
+		return ans;
+	}
+	void init(int _n){
+		n=_n+1; a.clear();
+		fill(head,head+n,-1);
+		fill(inque,inque+n,0);
+	}
+	int work(int _s,int _t){ //return max flow
+		s=_s,t=_t;
+		int ans=0;
+		while(bfs())ans+=dfs(s,INF);
+		return ans;
+	}
+  void add_edge(int x,int y,int w){
+    ae(x,y,w),ae(y,x,0);
   }
 };
-ISAP<int> isap;
+FLOW isap;
 
 struct SegmentTreeGarph {
   struct TreeNode {
@@ -96,24 +99,15 @@ struct SegmentTreeGarph {
   int tot, root[2];
   // op [down, 0] [up, 1]
   void build(const int &n) {
-#ifdef DEBUG
-    puts("SegmentTreeGraph begin");
-#endif
     tot = n;
     for (int i = 1; i <= n; ++i) tr[i].l = tr[i].r = i;
     // build(1, n, root[0], 0);
     build(1, n, root[1], 1);
-#ifdef DEBUG
-    puts("SegmentTreeGraph end");
-#endif
   }
   void build(const int &l, const int &r, int &i, const int &op) {
     if (l == r) return i = l, void();
     i = ++tot;
     tr[i].l = l; tr[i].r = r;
-#ifdef DEBUG
-    printf("(%d,%d) %d\n", l, r, i);
-#endif
     int mid = (l+r)>>1;
     build(l, mid, tr[i].ls, op);
     build(mid+1, r, tr[i].rs, op);
@@ -182,7 +176,7 @@ struct HLD {
   }
 } hld;
 
-int n, C, MID;
+int n, C, last_mid;
 int c[N], vfa[N];
 vector<int> e[N], ve[N], col[N];
 
@@ -233,12 +227,12 @@ int build_stg(const int &u = 1) {
   int sum = c[u] == C;
   for (const int &v : ve[u])
     sum += build_stg(v);
-  if (sum*C <= MID)
+  if (sum*C < n)
     hld.add_edge(2*n+sum*C, u, vfa[u]);
   return sum;
 }
 
-bool check() {
+void build_network() {
   isap.init(n*3+2);
   stg.build(n);
   assert(stg.tot < n*2);
@@ -256,13 +250,25 @@ bool check() {
     if (hld.fa[i] && hld.tp[i] != i)
       isap.add_edge(hld.fa[i], i, INF);
   }
-  return isap.work(st, ed) >= MID+1;
+}
+
+bool check(const int &mid) {
+  int st = n*3+1, ed = n*3+2;
+#ifdef DEBUG
+  if (mid < last_mid) isap.clear();
+  while (last_mid < mid) isap.modify_edge(2*n+(++last_mid), ed, 1);
+  while (last_mid > mid) isap.modify_edge(2*n+(last_mid--), ed, 0);
+#else
+  isap.clear();
+  for (int i = 0; i < n; ++i) {
+    isap.modify_edge(2*n+i, ed, i <= mid);
+  }
+#endif
+  return isap.work(st, ed) >= mid+1;
 }
 
 signed main() {
-#ifndef DEBUG
   ios::sync_with_stdio(false); cin.tie(nullptr); cout.tie(NULL);
-#endif
 
   cin >> n;
   for (int i = 2, p; i <= n; ++i) {
@@ -276,21 +282,20 @@ signed main() {
 
   hld.build(e);
 #ifdef DEBUG
-  puts("dfn id[]");
-  for (int i = 1; i <= n; ++i) printf("%d%c", hld.id[i], " \n"[i==n]);
-  puts("hld tp[]");
-  for (int i = 1; i <= n; ++i) printf("%d%c", hld.tp[i], " \n"[i==n]);
-  MID = 6;
-  cout << check() << endl;
-#else
-  int l = 0, r = n-1;
-  // global variable MID
+  last_mid = n;
+  build_network();
+  cout << check(6) << endl; // 1
+  cout << check(4) << endl; // 1
+  cout << check(6) << endl; // 0 shit!
+#endif
+  int l = 0, r = n-1, mid;
+  last_mid = n;
+  build_network();
   while (l < r) {
-    MID = (l+r+1)>>1;
-    if (check()) l = MID;
-    else r = MID-1;
+    mid = (l+r+1)>>1;
+    if (check(mid)) l = mid;
+    else r = mid-1;
   }
   cout << l+1 << endl;
-#endif
   return 0;
 }

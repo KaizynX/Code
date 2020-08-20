@@ -77,6 +77,8 @@
         "streambuf": "cpp",
         "typeindex": "cpp",
         "typeinfo": "cpp",
-        "variant": "cpp"
-    }
+        "variant": "cpp",
+        "*.txt": "cpp"
+    },
+    "python.pythonPath": "C:\\ProgramData\\Anaconda3\\python.exe"
 }

@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
  * @Date: 2020-08-05 20:57:30
- * @LastEditTime: 2020-08-07 15:25:39
+ * @LastEditTime: 2020-08-07 20:41:33
  */
 #include <bits/stdc++.h>
 
@@ -17,8 +17,9 @@ const int INF = 0x3f3f3f3f;
 const int N = 2e4+7;
 const int NN = (int)log2(N)+3;
 
-template <typename T>
-struct ISAP {
+// template <typename T>
+struct Dinic {
+  typedef int T;
   struct EDGE {
     int v, nex;
     T w;
@@ -27,112 +28,95 @@ struct ISAP {
   vector<EDGE> e;
   int n, s, t;
   T maxflow;
-  int fir[N<<2], gap[N<<2], dep[N<<2];
+  int fir[N*3], dep[N*3], cur[N*3];
   T work(const int &_s, const int &_t) {
     s = _s; t = _t;
-    maxflow = 0;
-    bfs();
-    while (dep[s] < n) dfs(s, INF);
+    T flow;
+    while (bfs())
+      while ((flow = dfs(s, INF)))
+        maxflow += flow;
     return maxflow;
   }
   void init(const int &_n) {
     n = _n;
     e.clear();
-    e.reserve(N<<2);
+    maxflow = 0;
     memset(fir, -1, sizeof(int)*(n+3));
   }
   void add_edge(const int &u, const int &v, const T &w) {
-#ifdef DEBUG
-    printf("net-work edge(%d,%d,%d)\n", u, v, w);
-#endif
     e.emplace_back(v, fir[u], w); fir[u] = e.size()-1;
     e.emplace_back(u, fir[v], 0); fir[v] = e.size()-1;
   }
-  void bfs() {
+  bool bfs() {
     queue<int> q;
-    memset(dep, -1, sizeof(int)*(n+3));
-    memset(gap, 0, sizeof(int)*(n+3));
-    dep[t] = 0;
-    gap[0] = 1;
-    q.push(t);
+    memset(dep, 0, sizeof(int)*(n+3));
+    q.push(s);
+    dep[s] = 1;
+    for (int i = 0; i <= n; ++i) cur[i] = fir[i];
     while (q.size()) {
       int u = q.front();
       q.pop();
       for (int i = fir[u], v; i != -1; i = e[i].nex) {
         v = e[i].v;
-        if (dep[v] != -1) continue;
-        q.push(v);
+        if (dep[v] || !e[i].w) continue;
         dep[v] = dep[u]+1;
-        ++gap[dep[v]];
+        if (v == t) return true;
+        q.push(v);
       }
     }
+    return false;
   }
   T dfs(const int &u, const T &flow) {
-    if (u == t) return maxflow += flow, flow;
-    T used = 0;
-    for (int i = fir[u], v; i != -1; i = e[i].nex) {
+    if (!flow || u == t) return flow;
+    T rest = flow, now;
+    for (int &i = cur[u], v; i != -1; i = e[i].nex) {
       v = e[i].v;
-      if (!e[i].w || dep[v]+1 != dep[u]) continue;
-      T minf = dfs(v, min(e[i].w, flow-used));
-      if (minf) {
-        e[i].w -= minf;
-        e[i^1].w += minf;
-        used += minf;
+      if (dep[v] != dep[u]+1 || !e[i].w) continue;
+      now = dfs(v, min(rest, e[i].w));
+      if (!now) {
+        dep[v] = 0;
+      } else {
+        e[i].w -= now;
+        e[i^1].w += now;
+        rest -= now;
+        if (rest == flow) break;
       }
-      if (used == flow) return used;
     }
-    if (--gap[dep[u]] == 0) dep[s] = n+1;
-    ++gap[++dep[u]];
-    return used;
+    return flow-rest;
   }
 };
-ISAP<int> isap;
+Dinic dinic, dinic2;
 
 struct SegmentTreeGarph {
   struct TreeNode {
     int l, r, ls, rs;
     int len() const { return r-l+1; }
-  } tr[N<<2];
-  int tot, root[2];
-  // op [down, 0] [up, 1]
+  } tr[N<<1];
+  int tot, root;
   void build(const int &n) {
-#ifdef DEBUG
-    puts("SegmentTreeGraph begin");
-#endif
     tot = n;
     for (int i = 1; i <= n; ++i) tr[i].l = tr[i].r = i;
-    // build(1, n, root[0], 0);
-    build(1, n, root[1], 1);
-#ifdef DEBUG
-    puts("SegmentTreeGraph end");
-#endif
+    build(1, n, root);
   }
-  void build(const int &l, const int &r, int &i, const int &op) {
+  void build(const int &l, const int &r, int &i) {
     if (l == r) return i = l, void();
     i = ++tot;
     tr[i].l = l; tr[i].r = r;
-#ifdef DEBUG
-    printf("(%d,%d) %d\n", l, r, i);
-#endif
     int mid = (l+r)>>1;
-    build(l, mid, tr[i].ls, op);
-    build(mid+1, r, tr[i].rs, op);
-    isap.add_edge(op ? tr[i].ls : i, op ? i : tr[i].ls, INF);
-    isap.add_edge(op ? tr[i].rs : i, op ? i : tr[i].rs, INF);
+    build(l, mid, tr[i].ls);
+    build(mid+1, r, tr[i].rs);
+    dinic.add_edge(tr[i].ls, i, INF);
+    dinic.add_edge(tr[i].rs, i, INF);
   }
-  void insert(const int &o, int l, int r, const int &op = 1) {
+  void insert(const int &o, int l, int r) {
     if (l > r) swap(l, r);
-    insert(o, l, r, op, root[op]);
+    insert(o, l, r, root);
   }
-  void insert(const int &o, const int &l, const int &r,
-      const int &op, const int &i) {
-    if (tr[i].l >= l && tr[i].r <= r) {
-      isap.add_edge(op ? i : o, op ? o : i, INF);
-      return;
-    }
+  void insert(const int &o, const int &l, const int &r, const int &i) {
+    if (tr[i].l >= l && tr[i].r <= r) return dinic.add_edge(i, o, INF);
     int mid = (tr[i].l+tr[i].r)>>1;
-    if (l <= mid) insert(o, l, r, op, tr[i].ls);
-    if (r >  mid) insert(o, l, r, op, tr[i].rs);
+    if (l <= mid) insert(o, l, r, tr[i].ls);
+    if (r >  mid) insert(o, l, r, tr[i].rs);
   }
 } stg;
 
@@ -175,14 +159,14 @@ struct HLD {
   void add_edge(int o, int x, int y) {
     if (d[x] < d[y]) swap(x, y); // x is son of y
     while (tp[x] != tp[y]) {
-      isap.add_edge(id[x], o, INF);
+      dinic.add_edge(id[x], o, INF);
       x = fa[tp[x]];
     }
     if (x != y) stg.insert(o, id[y]+1, id[x]);
   }
 } hld;
 
-int n, C, MID;
+int n, C, last_mid, last_mid2;
 int c[N], vfa[N];
 vector<int> e[N], ve[N], col[N];
 
@@ -223,7 +207,6 @@ int virtual_tree_build(vector<int> &vset) {
     vfa[x] = stk[top];
     x = stk[top--];
   }
-  // if (x != 1) ve[1].emplace_back(x), vfa[x] = 1;
   return x;
 }
 // VirtualTree end
@@ -233,13 +216,13 @@ int build_stg(const int &u = 1) {
   int sum = c[u] == C;
   for (const int &v : ve[u])
     sum += build_stg(v);
-  if (sum*C <= MID)
+  if (sum*C < n)
     hld.add_edge(2*n+sum*C, u, vfa[u]);
   return sum;
 }
 
-bool check() {
-  isap.init(n*3+2);
+void build_network() {
+  dinic.init(n*3+2);
   stg.build(n);
   assert(stg.tot < n*2);
   for (C = 1; C <= n; ++C) if (col[C].size()) {
@@ -248,21 +231,34 @@ bool check() {
     virtual_tree_clear(rt);
   }
   int st = n*3+1, ed = n*3+2;
-  isap.add_edge(2*n, ed, 1); // k*d == 0
+  dinic.add_edge(2*n, ed, 1); // k*d == 0
   for (int i = 1; i <= n; ++i) {
-    isap.add_edge(st, i, 1);
-    isap.add_edge(i, 2*n, 1);
-    isap.add_edge(2*n+i, ed, 1);
+    dinic.add_edge(st, i, 1);
+    dinic.add_edge(i, 2*n, 1);
+    // dinic.add_edge(2*n+i, ed, 0); // key
     if (hld.fa[i] && hld.tp[i] != i)
-      isap.add_edge(hld.fa[i], i, INF);
+      dinic.add_edge(hld.fa[i], i, INF);
   }
-  return isap.work(st, ed) >= MID+1;
+}
+
+bool check(const int &mid) {
+  int st = n*3+1, ed = n*3+2;
+  while (last_mid < mid) dinic.add_edge(2*n+(++last_mid), ed, 1);
+  return dinic.work(st, ed) >= mid+1;
+}
+
+void save_graph() {
+  dinic2 = dinic;
+  last_mid2 = last_mid;
+}
+
+void get_graph() {
+  dinic = dinic2;
+  last_mid = last_mid2;
 }
 
 signed main() {
-#ifndef DEBUG
   ios::sync_with_stdio(false); cin.tie(nullptr); cout.tie(NULL);
-#endif
 
   cin >> n;
   for (int i = 2, p; i <= n; ++i) {
@@ -275,22 +271,20 @@ signed main() {
   }
 
   hld.build(e);
-#ifdef DEBUG
-  puts("dfn id[]");
-  for (int i = 1; i <= n; ++i) printf("%d%c", hld.id[i], " \n"[i==n]);
-  puts("hld tp[]");
-  for (int i = 1; i <= n; ++i) printf("%d%c", hld.tp[i], " \n"[i==n]);
-  MID = 6;
-  cout << check() << endl;
-#else
-  int l = 0, r = n-1;
-  // global variable MID
+  int l = 0, r = n-1, mid;
+  last_mid = 0;
+  build_network();
+  save_graph();
   while (l < r) {
-    MID = (l+r+1)>>1;
-    if (check()) l = MID;
-    else r = MID-1;
+    mid = (l+r+1)>>1;
+    if (check(mid)) {
+      l = mid;
+      save_graph();
+    } else {
+      r = mid-1;
+      get_graph();
+    }
   }
   cout << l+1 << endl;
-#endif
   return 0;
 }
