@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
  * @Date: 2020-09-19 22:31:13
- * @LastEditTime: 2020-09-19 23:56:04
+ * @LastEditTime: 2020-09-26 11:42:49
  */
 #include <bits/stdc++.h>
 
@@ -16,47 +16,46 @@ const int MOD = 998244353;
 const int INF = 0x3f3f3f3f;
 const int N = 1e5+7;
 
-int n, m, a;
-int k[N], t[N];
-long long p[N];
+int n, m;
+int k[N], p[N];
 
-void f(const int &u) {
-  if (u > m) {
-    if (a > 1) cout << a << " ";
-    return;
-  }
-  if (t[u] == k[u]) {
-    for ( ; t[u]; --t[u]) {
-      f(u+1);
-      a /= p[u];
-    }
-    f(u+1);
-  } else {
-    for ( ; t[u] < k[u]; ++t[u]) {
-      f(u+1);
-      a *= p[u];
-    }
-    f(u+1);
-  }
-}
-
-inline void solve() {
-  cin >> n;
+void get_prime(int n) {
   m = 0;
-  a = 1;
   for (int i = 2; i*i <= n; ++i) {
     if (n%i) continue;
     p[++m] = i;
-    k[m] = t[m] = 0;
+    k[m] = 0;
     while (n%i == 0) n /= i, ++k[m];
   }
   if (n > 1) {
     p[++m] = n;
     k[m] = 1;
-    t[m] = 0;
   }
-  f(1);
-  cout << endl << 0 << endl;
+}
+
+inline void solve() {
+  cin >> n;
+  get_prime(n);
+  if (m == 2) {
+    if (k[1] == 1 && k[2] == 1) {
+      cout << p[1] << " " << p[2] << " " << n << endl
+          << 1 << endl;
+    } else {
+      cout << p[1] << " " << p[1]*p[2] << " " << n;
+      for (int i = 0, pw1 = 1; i <= k[1]; ++i, pw1 *= p[1]) {
+        for (int j = 0, pw2 = 1; j <= k[2]; ++j, pw2 *= p[2]) {
+          if (i == 0 && j == 0) continue;
+          if (i == 1 && j == 0) continue;
+          if (i == 1 && j == 1) continue;
+          if (i == k[1] && j == k[2]) continue;
+          cout << pw1*pw2 << " ";
+        }
+      }
+      cout << endl << 0 << endl;
+    }
+    return;
+  }
+  // too lazy to code
 }
 
 signed main() {
