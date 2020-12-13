@@ -1,20 +1,11 @@
 /*
  * @Author: Kaizyn
- * @Date: 2020-11-27 08:43:01
- * @LastEditTime: 2020-11-30 16:37:58
+ * @Date: 2020-11-30 19:08:50
+ * @LastEditTime: 2020-11-30 19:30:51
  */
 #include <bits/stdc++.h>
-
 // #define DEBUG
-// #define int long long
-
 using namespace std;
-
-const double eps = 1e-7;
-const double PI = acos(-1);
-typedef pair<int, int> pii;
-const int MOD = 998244353;
-const int INF = 0x3f3f3f3f;
 const int N = 2e5+7;
 
 int n, q;
@@ -65,49 +56,37 @@ struct SegmentTree {
     if (r >  m) update(l, r, k, i<<1|1);
     push_up(i);
   }
-  int first_less_or_equal(int k) {
-    if (k < tr[1].rv) return n+1;
+  long long sum(int l, int r, int i = 1) {
+    if (l > r) return 0;
+    if (tr[i].l >= l && tr[i].r <= r) return tr[i].sum;
+    push_down(i);
+    int m = (tr[i].l+tr[i].r)>>1;
+    if (r <= m) return sum(l, r, i<<1);
+    if (l >  m) return sum(l, r, i<<1|1);
+    return sum(l, r, i<<1)+sum(l, r, i<<1|1);
+  }
+  int BS1(int y) {
+    if (y < tr[1].rv) return n+1;
     int i = 1;
     while (tr[i].l != tr[i].r) {
       push_down(i);
-      if (tr[i<<1].rv <= k) i = i<<1;
+      if (tr[i<<1].rv <= y) i = i<<1;
       else i = i<<1|1;
     }
     return tr[i].l;
   }
-  int minus_sum(int &x, int &y) {
-    int i = 1, cnt = 1;
+  int BS2(long long y) {
+    int i = 1;
     while (tr[i].l != tr[i].r) {
       push_down(i);
-      int m = (tr[i].l+tr[i].r)>>1;
-      if (x <= m) i = i<<1;
-      else i = i<<1|1;
-    }
-    assert(tr[i].l == x);
-    y -= tr[i].lv;
-    while (i > 1) {
-      if (i%2 == 0) { // && i < id[n]
-        if (y >= tr[i|1].sum) {
-          y -= tr[i|1].sum;
-          cnt += tr[i|1].len();
-        } else {
-          break;
-        }
-      }
-      i >>= 1;
-    }
-    if (i == 1) return x = n+1, cnt;
-    i = i|1;
-    while (tr[i].l != tr[i].r) {
       if (y >= tr[i<<1].sum) {
         y -= tr[i<<1].sum;
-        cnt += tr[i<<1].len();
         i = i<<1|1;
       } else {
         i = i<<1;
       }
     }
-    return x = tr[i].l, cnt;
+    return tr[i].l-(y < tr[i].sum);
   }
 } tree;
 
@@ -118,11 +97,14 @@ inline void solve() {
   for (int _ = q, t, x, y; _; --_) {
     cin >> t >> x >> y;
     if (t == 1) {
-      tree.update(tree.first_less_or_equal(y), x, y);
+      tree.update(tree.BS1(y), x, y);
     } else {
       int res = 0;
-      while ((x = max(x, tree.first_less_or_equal(y))) <= n) {
-        res += tree.minus_sum(x, y);
+      while ((x = max(x, tree.BS1(y))) <= n) {
+        int xx = tree.BS2(y+tree.sum(1, x-1));
+        y -= tree.sum(x, xx);
+        res += xx-x+1;
+        x = xx+1;
       }
       cout << res << endl;
     }

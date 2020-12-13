@@ -41,3 +41,7 @@
 *.in
 *.out
 *.ans
+
+# emmm
+test.cpp
+test.c
