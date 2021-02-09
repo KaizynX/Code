@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
- * @Date: 2021-01-05 22:32:35
- * @LastEditTime: 2021-01-09 19:51:03
+ * @Date: 2021-02-09 13:44:40
+ * @LastEditTime: 2021-02-09 14:19:20
  */
 #include <bits/stdc++.h>
 
@@ -18,29 +18,30 @@ const int INF = 0x3f3f3f3f;
 // const ll INF = 1e18;
 const int N = 1e5+7;
 
-int n, k;
-ll buf[2][N], *a[2] = {buf[0]+N/2, buf[1]+N/2};
+int n;
+int a[N];
 
-int query(int x) {
+int f(int x) {
+  if (~a[x]) return a[x];
   cout << "? " << x << endl;
-  cin >> x;
-  return x;
+  cin >> a[x];
+  return a[x];
 }
 
 inline void solve() {
-  cin >> n >> k;
-  for (int i = 0; i <= 31; ++i) {
-    a[0][i] = a[0][-i] = k;
-    a[1][i] = a[1][-i] = k;
+  cin >> n;
+  memset(a+1, -1, sizeof(int)*n);
+  a[0] = a[n+1] = INF;
+  int l = 1, r = n;
+  while (l < r) {
+    int mid = (l+r)/2;
+    if (f(mid) < f(mid+1)) r = mid;
+    else l = mid+1;
   }
-  for (int i = 1; i <= 30; ++i) {
-    query(1);
-    ll *cur = a[i&1], *pre = a[~i&1];
-    cur[0] = (pre[-1]+1)/2+pre[1]/2;
-    cur[1] = pre[0]+pre[2]/2;
-    cur[-1] = (pre[-2]+1)/2;
-    for (int j = 2; j <= i; ++j) {
-      cur[j] = (pre[j-1]+1)/2+pre[j+1]/2;
+  for (int i = max(1, l-5); i <= min(n, l+5); ++i) f(i);
+  for (int i = max(1, l-5); i <= min(n, l+5); ++i) {
+    if (a[i] < a[i-1] && a[i] < a[i+1]) {
+      return cout << "! " << i << endl, void();
     }
   }
 }

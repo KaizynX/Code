@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
  * @Date: 2021-01-08 09:15:55
- * @LastEditTime: 2021-01-08 09:16:44
+ * @LastEditTime: 2021-01-09 15:16:32
  */
 #include <bits/stdc++.h>
 
@@ -19,18 +19,43 @@ const int INF = 0x3f3f3f3f;
 const int N = 3e5+7;
 
 int n, m;
+int vis[N];
+vector<int> e[N];
+queue<int> q;
 
 inline void solve() {
   cin >> n >> m;
   for (int i = 1, u, v; i <= m; ++i) {
     cin >> u >> v;
     e[u].emplace_back(v);
+    e[v].emplace_back(u);
   }
-  bfs();
-  dfs(1);
+  vis[1] = 1;
+  q.push(1);
+  while (q.size()) {
+    int u = q.front();
+    q.pop();
+    for (int &v : e[u]) {
+      if (!vis[v]) {
+        q.push(v);
+        vis[v] = -vis[u];
+      }
+      if (vis[u] == 1) vis[v] = -1;
+    }
+  }
+  vector<int> res;
   for (int i = 1; i <= n; ++i) {
-    cout << dp[i] << " \n"[i==n];
+    if (!vis[i]) {
+      cout << "NO" << endl;
+      return;
+    } else if (vis[i] == 1) {
+      res.emplace_back(i);
+    }
   }
+  cout << "YES" << endl;
+  cout << res.size() << endl;
+  for (int &i : res) cout <<i << " ";
+  cout << endl;
 }
 
 signed main() {
