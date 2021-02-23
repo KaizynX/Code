@@ -10,7 +10,7 @@
                  "/C",
                  "${fileDirname}\\${fileBasenameNoExtension}.exe",
                  "&",
-                 "pause"
+                //  "pause"
 
              ],
              // Ctrl+Shift+B
@@ -18,7 +18,7 @@
              "stopAtEntry": false,
              "cwd": "${workspaceFolder}",
              "environment": [],
-             "externalConsole":true
+             "console": "externalTerminal"
          },
          {
              "name": "(gdb) Launch",
