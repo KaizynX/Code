@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
- * @Date: 2021-03-01 16:42:19
- * @LastEditTime: 2021-03-10 12:05:06
+ * @Date: 2021-03-10 12:16:29
+ * @LastEditTime: 2021-03-10 12:19:26
  */
 #include <bits/stdc++.h>
 
@@ -44,22 +44,23 @@ signed main() {
   }
   if (dif[mxi] > 4) return cout << "No\n", 0;
   if (dif[mxi] <= 2) return print(a[0]), 0;
-
-  vector<int> difp, res;
-  for (int i = 0; i < m; ++i) {
-    if (a[mxi][i] != a[0][i]) {
-      difp.emplace_back(i);
-    }
-  }
-  // 4(2), 3(1, 2)
-  for (int i = 0; i < 1<<dif[mxi]; ++i) {
-    int bt = __builtin_popcount(i);
-    if (bt <= 2 && bt >= dif[mxi]-2) {
-      res = a[0];
-      for (int j = 0; j < dif[mxi]; ++j) if ((i>>j)&1) {
-        res[difp[j]] = a[mxi][difp[j]];
+  for (mxi = 1; mxi < n; ++mxi) if (dif[mxi] > 2) {
+    vector<int> difp, res;
+    for (int i = 0; i < m; ++i) {
+      if (a[mxi][i] != a[0][i]) {
+        difp.emplace_back(i);
       }
-      if (check(res)) return print(res), 0;
+    }
+    // 4(2), 3(1, 2)
+    for (int i = 0; i < 1<<dif[mxi]; ++i) {
+      int bt = __builtin_popcount(i);
+      if (bt <= 2 && bt >= dif[mxi]-2) {
+        res = a[0];
+        for (int j = 0; j < dif[mxi]; ++j) if ((i>>j)&1) {
+          res[difp[j]] = a[mxi][difp[j]];
+        }
+        if (check(res)) return print(res), 0;
+      }
     }
   }
   cout << "No\n";
@@ -72,4 +73,7 @@ signed main() {
 185202051 361984662 256604854 909233087 841008011
 185202051 372891934 256604854 809788696 928119866
 185202051 361984662 290067511 809788696 581607532
+
+Yes
+185202051 361984662 256604854 809788696 666765043
 */

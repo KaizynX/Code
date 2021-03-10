@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
  * @Date: 2020-03-03 16:51:41
- * @LastEditTime: 2021-02-15 14:40:31
+ * @LastEditTime: 2021-03-10 09:09:03
  */
 #include <bits/stdc++.h>
 
@@ -19,9 +19,14 @@ const int INF = 0x3f3f3f3f;
 // const int N = ;
 
 inline void solve() {
-  vector<int> v;
-  v.assign({1});
-  for (int &i : v) cout << i << " ";
+  cout << (0 == 0U) << '\n';
+  cout << (-1 < 0) << '\n';
+  cout << (-1 < 0U) << '\n';
+  cout << (2147483647 > -2147483647-1) << '\n';
+  cout << (2147483647U > -2147483647-1) << '\n';
+  cout << (2147483647 > (int)2147483648U) << '\n';
+  cout << (-1 > -2) << '\n';
+  cout << ((unsigned)-1 > -2) << '\n';
 }
 
 signed main() {
