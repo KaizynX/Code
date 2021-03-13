@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
  * @Date: 2020-03-03 16:51:41
- * @LastEditTime: 2021-03-10 09:09:03
+ * @LastEditTime: 2021-03-12 22:33:17
  */
 #include <bits/stdc++.h>
 
@@ -17,6 +17,29 @@ const int MOD = 998244353;
 const int INF = 0x3f3f3f3f;
 // const ll INF = 1e18;
 // const int N = ;
+
+template <typename T = int> struct DSU {
+  vector<int> fa;
+  vector<T> w;
+  void init(int n, T v = 1) {
+    fa = vector<int>(n+1);
+    iota(fa.begin(), fa.end(), 0);
+    w = vector<T>(v);
+  }
+  void init(int n, T a[]) {
+    fa = vector<int>(n+1);
+    iota(fa.begin(), fa.end(), 0);
+    w = vector<T>(a, a+n+1);
+  }
+  int get(int s) { return s == fa[s] ? s : fa[s] = get(fa[s]); }
+  int& operator [] (int i) { return fa[get(i)]; }
+  bool merge(int x, int y) { // merge x to y
+    x = get(x); y = get(y);
+    return x == y ? false : w[y] += w[x], fa[x] = y, true;
+  }
+};
+
+DSU dsu;
 
 inline void solve() {
   cout << (0 == 0U) << '\n';
