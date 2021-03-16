@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
  * @Date: 2020-03-03 16:51:41
- * @LastEditTime: 2021-03-12 22:33:17
+ * @LastEditTime: 2021-03-16 09:18:08
  */
 #include <bits/stdc++.h>
 
@@ -39,17 +39,10 @@ template <typename T = int> struct DSU {
   }
 };
 
-DSU dsu;
 
 inline void solve() {
-  cout << (0 == 0U) << '\n';
-  cout << (-1 < 0) << '\n';
-  cout << (-1 < 0U) << '\n';
-  cout << (2147483647 > -2147483647-1) << '\n';
-  cout << (2147483647U > -2147483647-1) << '\n';
-  cout << (2147483647 > (int)2147483648U) << '\n';
-  cout << (-1 > -2) << '\n';
-  cout << ((unsigned)-1 > -2) << '\n';
+  int a = 100'000;
+  cout << a << '\n';
 }
 
 signed main() {
