@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
  * @Date: 2021-03-17 22:00:48
- * @LastEditTime: 2021-03-17 22:31:09
+ * @LastEditTime: 2021-03-19 21:22:08
  */
 #include <bits/stdc++.h>
 
@@ -27,22 +27,23 @@ bool cmpb(const Node &l, const Node &r) {
 }
 
 struct DSU {
-  vector<int> fa, rk, ma, mb;
+  vector<int> fa, sz, ma, mb;
   stack<Node> stk;
   void init(int n) {
     stk = stack<Node>();
-    fa = rk = ma = mb = vector<int>(n+1, 0);
+    fa = sz = vector<int>(n+1, 1);
+    ma = mb = vector<int>(n+1, -1);
     iota(fa.begin(), fa.end(), 0);
   }
   int get(int s) { while (s != fa[s]) s = fa[s]; return s; }
   int& operator [](int i) { return fa[get(i)]; }
   void merge(int x, int y, int a, int b) {
     x = get(x); y = get(y);
-    if (rk[x] > rk[y]) swap(x, y);
-    stk.push(Node{x, y, ma[y], mb[y], rk[y]});
+    if (sz[x] > sz[y]) swap(x, y);
+    stk.push(Node{x, y, ma[y], mb[y], sz[y]});
     if (x != y) {
       fa[x] = y;
-      rk[y] += rk[x] == rk[y];
+      sz[y] += sz[x];
     }
     ma[y] = max({ma[y], ma[x], a});
     mb[y] = max({mb[y], mb[x], b});
@@ -51,9 +52,9 @@ struct DSU {
     if (stk.empty()) return;
     int x = stk.top().u, y = stk.top().v;
     fa[x] = x;
-    rk[y] = stk.top().id;
     ma[y] = stk.top().a;
     mb[y] = stk.top().b;
+    sz[y] = stk.top().id;
     stk.pop();
   }
 };
@@ -79,12 +80,13 @@ signed main() {
   for (int i = 1, j, k, l, sum, cnt; i <= m; i += sz) {
     dsu.init(n);
     for (j = 1, sum = 0; j <= q; ++j) {
-      if (a[i].a <= b[j].a && (i+sz > m || b[j].a < a[i+sz].a)) {
+      // if (a[i].a <= b[j].a && (i+sz > m || b[j].a < a[i+sz].a)) {
+      if (a[i].a <= b[j].a && (b[j].a < a[i+sz].a || i+sz > m)) {
         c[++sum] = b[j];
       }
     }
     if (!sum) continue;
-    sort(a+1, a+i, cmpb);
+    if (i > 1) sort(a+1, a+i, cmpb);
     for (j = k = 1; j <= sum; ++j) {
       for ( ; k < i && a[k].b <= c[j].b; ++k) {
         dsu.merge(a[k].u, a[k].v, a[k].a, a[k].b);

@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
  * @Date: 2021-03-17 17:01:47
- * @LastEditTime: 2021-03-17 17:03:40
+ * @LastEditTime: 2021-03-19 21:25:20
  */
 #include <bits/stdc++.h>
 
@@ -24,7 +24,8 @@ struct DSU {
   stack<pair<vector<int>::iterator, int>> stk;
   void init(int n) {
     stk = stack<pair<vector<int>::iterator, int>>();
-    fa = rk = ma = mb = vector<int>(n+1, 0);
+    fa = rk = vector<int>(n+1, 0);
+    ma = mb = vector<int>(n+1, -1);
     iota(fa.begin(), fa.end(), 0);
   }
   int get(int s) { while (s != fa[s]) s = fa[s]; return s; }
