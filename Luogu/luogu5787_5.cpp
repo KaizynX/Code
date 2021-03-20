@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
- * @Date: 2021-03-19 23:35:09
- * @LastEditTime: 2021-03-20 22:58:09
+ * @Date: 2021-03-20 22:04:09
+ * @LastEditTime: 2021-03-20 22:50:17
  */
 #include <bits/stdc++.h>
 
@@ -22,56 +22,31 @@ int n, m, k;
 int res[N];
 
 struct DSU {
-  int flag;
-  vector<int> ptn, enm, siz; // ptntner, enemy
+  int n;
+  vector<int> fa, rk; // [1, n] partner, [n+1, 2n] enemy
   stack<pair<int&, int>> stk;
   void init(int n) {
-    flag = 1;
+    this->n = n;
     stk = stack<pair<int&, int>>();
-    siz = vector<int>(n+1, 1);
-    ptn = enm = vector<int>(n+1, 0);
-    iota(ptn.begin(), ptn.end(), 0);
+    fa = rk = vector<int>(2*n+1, 0);
+    iota(fa.begin(), fa.end(), 0);
   }
-  int get(int s) { while (s != ptn[s]) s = ptn[s]; return s; }
+  int& operator [] (int i) { return fa[get(i)]; }
+  int get(int s) { while (s != fa[s]) s = fa[s]; return s; }
+  void undo() { stk.top().first = stk.top().second; stk.pop(); }
   void merge(int x, int y) {
     x = get(x); y = get(y);
-    if (siz[x] > siz[y]) swap(x, y);
-    stk.push({ptn[x], ptn[x]});
-    stk.push({siz[y], siz[y]});
-    ptn[x] = y;
-    siz[y] += siz[x];
+    if (x == y) return;
+    if (rk[x] > rk[y]) swap(x, y);
+    stk.push({fa[x], fa[x]});
+    stk.push({rk[y], rk[y]});
+    fa[x] = y;
+    rk[y] += rk[x] == rk[y];
   }
-  int update(int x, int y) {
-    if(!enm[x] && !enm[y]) { // set this two to oppsite
-      stk.push({enm[x], enm[x]});
-      stk.push({enm[y], enm[y]});
-      enm[x] = y;
-      enm[y] = x;
-      return 2;
-    } else if(!enm[x] && enm[y]) { // set x to y's enemy
-      merge(x, enm[y]);
-      stk.push({enm[x], enm[x]});
-      enm[x] = get(y);
-      return 3;
-    } else if(enm[x] && !enm[y]) {
-      merge(y, enm[x]);
-      stk.push({enm[y], enm[y]});
-      enm[y] = get(x);
-      return 3;
-    } else if(get(enm[x]) != get(enm[y])) { // connect(enm[x],ptn[y]) (enm[y],ptn[x])
-      merge(y, enm[x]);
-      merge(x, enm[y]);
-      return 4;
-    } else {
-      stk.push({flag, flag});
-      flag = 0;
-      return 1;
-    }
-  }
-  bool undo() {
-    if (stk.empty()) return false;
-    stk.top().first = stk.top().second;
-    stk.pop();
+  bool update(int x, int y) {
+    if (get(x) == get(y)) return false;
+    merge(x+n, y);
+    merge(x, y+n);
     return true;
   }
 };
@@ -102,10 +77,17 @@ struct SegmentTree {
     if (r >  mid) insert(l, r, info, i<<1|1);
   }
   void work(int i = 1) {
-    int sz = dsu.stk.size();
-    for (auto &p : tr[i].infos) dsu.update(p.first, p.second);
-    if (tr[i].l == tr[i].r) res[tr[i].l] = dsu.flag;
-    else work(i<<1), work(i<<1|1);
+    int sz = dsu.stk.size(), flag = 1;
+    for (auto &p : tr[i].infos) {
+      if (!dsu.update(p.first, p.second)) {
+        flag = 0;
+        break;
+      }
+    }
+    if (flag) {
+      if (tr[i].l == tr[i].r) res[tr[i].l] = 1;
+      else work(i<<1), work(i<<1|1);
+    }
     while (sz != (int)dsu.stk.size()) dsu.undo();
   }
 };
@@ -117,7 +99,7 @@ signed main() {
   tree.build(1, k);
   for (int i = 1, u, v, l, r; i <= m; ++i) {
     scanf("%d%d%d%d", &u, &v, &l, &r);
-    tree.insert(l+1, r, {u, v});
+    if (l < r) tree.insert(l+1, r, {u, v});
   }
   dsu.init(n);
   tree.work();
