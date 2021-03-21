@@ -10,15 +10,14 @@
                  "/C",
                  "${fileDirname}\\${fileBasenameNoExtension}.exe",
                  "&",
-                //  "pause"
-
+                 "pause"
              ],
              // Ctrl+Shift+B
              //"preLaunchTask": "g++",
              "stopAtEntry": false,
              "cwd": "${workspaceFolder}",
              "environment": [],
-             "console": "externalTerminal"
+             "console": "newExternalWindow"
          },
          {
              "name": "(gdb) Launch",
