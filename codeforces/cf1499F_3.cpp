@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
- * @Date: 2021-03-22 22:28:21
- * @LastEditTime: 2021-04-03 10:20:41
+ * @Date: 2021-04-03 18:56:30
+ * @LastEditTime: 2021-04-03 19:02:19
  */
 #include <bits/stdc++.h>
 
@@ -186,37 +186,23 @@ using Mint = Modular<std::integral_constant<decay<decltype(md)>::type, md>>;
 
 int n, k;
 vector<int> e[N];
-Mint dp[N][N], mul[N];
+Mint dp[N][N];
 
-#ifdef DEBUG
-inline void print(int u) {
-  cout << u << ":";
-  for (int i = 0; i <= k; ++i) cout << dp[u][i] << " \n"[i==k];
-}
-#endif
-
-void dfs(int u, int fa) {
+int dfs(int u, int fa) {
   dp[u][0] = 1;
-  for (int i = 0; i <= k; ++i) mul[i] = 1;
+  int h = 0;
   for (int &v : e[u]) if (v != fa) {
-    dfs(v, u);
-    for (int i = 0; i <= k; ++i) {
-      mul[i] *= dp[v][i];
-      dp[u][i+1] += dp[v][i];
+    int nh = dfs(v, u);
+    vector<Mint> tmp(max(h, nh+1)+1);
+    for (int i = 0; i <= h; ++i)
+    for (int j = 0; j <= nh; ++j) {
+      if (i+j+1 <= k) tmp[max(i, j+1)] += dp[u][i]*dp[v][j];
+      if (i <= k && j <= k) tmp[i] += dp[u][i]*dp[v][j];
     }
+    h = max(h, nh+1);
+    for (int i = 0; i <= h; ++i) dp[u][i] = tmp[i];
   }
-  for (int i = 0; i+i+2 <= k; ++i) dp[u][i+2] += mul[i]; // i <= (k-2)/2
-  for (int &v : e[u]) if (v != fa) {
-    for (int i = (k-2)/2+1, j; i <= k-2; ++i) {
-      j = min(k-2-i, i);
-      if (i <= j) continue;
-      dp[u][i+1] += dp[v][i]*(mul[j]/dp[v][j]);
-    }
-  }
-  #ifdef DEBUG
-  print(u);
-  #endif
-  for (int i = 1; i <= k; ++i) dp[u][i] += dp[u][i-1];
+  return h;
 }
 
 inline void solve() {
@@ -227,7 +213,9 @@ inline void solve() {
     e[v].emplace_back(u);
   }
   dfs(1, 0);
-  cout << dp[1][k] << '\n';
+  Mint res = 0;
+  for (int i = 0; i <= k; ++i) res += dp[1][i];
+  cout << res << '\n';
 }
 
 signed main() {
