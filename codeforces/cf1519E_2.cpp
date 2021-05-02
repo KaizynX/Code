@@ -1,11 +1,11 @@
 /*
  * @Author: Kaizyn
  * @Date: 2021-04-29 23:56:54
- * @LastEditTime: 2021-04-30 00:14:05
+ * @LastEditTime: 2021-04-30 14:46:13
  */
 #include <bits/stdc++.h>
 
-#define DEBUG
+// #define DEBUG
 
 using namespace std;
 
@@ -19,13 +19,12 @@ const int INF = 0x3f3f3f3f;
 const int N = 2e5+7;
 typedef tuple<int, int, int, int> Node;
 typedef pair<ll, ll> pll;
-mt19937 rnd(chrono::high_resolution_clock::now().time_since_epoch().count());
 
 int n;
-int use[N], rk[N<<1];
+int use[N], vis[N<<1];
 Node p[N];
 vector<pll> dis;
-vector<int> pset[N<<1], res[N<<1];
+vector<pii> e[N<<1], res;
 
 inline pll magic(ll a, ll b, ll c, ll d) {
   a *= d;
@@ -38,21 +37,31 @@ inline int lb(pll v) {
   return lower_bound(dis.begin(), dis.end(), v)-dis.begin()+1;
 }
 
-inline void reuse(int i) {
-  int j = use[i];
-  for (int &k : pset[j]) {
-    if (k == i) {
-      use[k] = -1;
-    } else if (use[k] == j) {
-      use[k] = 0;
-      res[j].emplace_back(k);
+void dfs(int u, int f = -1, int fid = -1) {
+  // static vector<int> vec;
+  vis[u] = 1;
+  for (auto &p : e[u]) {
+    int v = p.first;
+    int id = p.second;
+    if (v == f || vis[v]) continue;
+    dfs(v, u, id);
+  }
+  int last = -1;
+  for (auto &p : e[u]) {
+    int v = p.first;
+    int id = p.second;
+    if (v == f || use[id]) continue;
+    if (~last) {
+      res.emplace_back(last, id);
+      use[last] = use[id] = 1;
+      last = -1;
+    } else {
+      last = id;
     }
   }
-}
-
-void shuffle(int a[], int n) {
-  for (int i = 1; i <= n; ++i) {
-    swap(a[i], a[rnd()%i+1]);
+  if (~last && ~fid) {
+    res.emplace_back(last, fid);
+    use[last] = use[fid] = 1;
   }
 }
 
@@ -66,49 +75,18 @@ inline void solve() {
   }
   sort(dis.begin(), dis.end());
   dis.erase(unique(dis.begin(), dis.end()), dis.end());
-  for (int i = 1, a, b, c, d; i <= n; ++i) {
+  for (int i = 1, a, b, c, d, u, v; i <= n; ++i) {
     tie(a, b, c, d) = p[i];
-    pset[lb(magic(a+b, b, c, d))].emplace_back(i);
-    pset[lb(magic(a, b, c+d, d))].emplace_back(i);
+    u = lb(magic(a+b, b, c, d));
+    v = lb(magic(a, b, c+d, d));
+    e[u].emplace_back(v, i);
+    e[v].emplace_back(u, i);
   }
-  memset(use, -1, sizeof use);
-  iota(rk+1, rk+(int)dis.size()+1, 1);
-  shuffle(rk, dis.size());
-  int tot = 0;
-  for (int _ = 1, i, cnt; _ <= (int)dis.size(); ++_) {
-    i = rk[_];
-    #ifdef DEBUG
-    cout << i << ":";
-    for (auto &j : pset[i]) {
-      printf("(%d,%d)", j, use[j]);
-    }
-    cout << '\n';
-    #endif
-    cnt = 0;
-    for (int &j : pset[i]) {
-      if (use[j] > 0) reuse(j);
-      if (use[j] == -1) ++cnt;
-    }
-    tot += cnt/2;
-    if (cnt&1) {
-      for (int &j : pset[i]) {
-        if (use[j] == -1) use[j] = i;
-      }
-    } else {
-      for (int &j : pset[i]) {
-        if (use[j] == -1) {
-          use[j] = 0;
-          res[i].emplace_back(j);
-        }
-      }
-    }
-  }
-  cout << tot << endl;
   for (int i = 1; i <= (int)dis.size(); ++i) {
-    for (int j = 0; j < (int)res[i].size(); j += 2) {
-      cout << res[i][j] << ' ' << res[i][j+1] << '\n';
-    }
+    if (!vis[i]) dfs(i);
   }
+  cout << res.size() << '\n';
+  for (auto &p : res) cout << p.first << ' ' << p.second << '\n';
 }
 
 signed main() {
