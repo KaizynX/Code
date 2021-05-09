@@ -1,106 +1,168 @@
 /*
  * @Author: Kaizyn
  * @Date: 2021-03-04 21:47:00
- * @LastEditTime: 2021-04-27 21:17:31
+ * @LastEditTime: 2021-05-05 22:49:51
  */
 #include <bits/stdc++.h>
 
-// #define DEBUG
-
 using namespace std;
 
-const double eps = 1e-7;
-const double PI = acos(-1);
-typedef pair<int, int> pii;
-typedef long long ll;
-const int MOD = 998244353; // 1e9+7;
-const int INF = 0x3f3f3f3f;
-// const ll INF = 1e18;
-const int N = 1e5+7;
+bool comp(int n, char *a, char *b) {
+  for (int i = 0; i < n; ++i) {
+    if (a[i] != b[i] && (a[i] != '-' && b[i] != '-')) return false;
+  }
+  return true;
+}
 
-// array [0, n)
-namespace NTT {
-  static const int SIZE = (1<<18)+3;
-  const int G = 3;
-  int len, bit;
-  int rev[SIZE];
-  long long f[SIZE], g[SIZE];
-  template <class T>
-  void ntt(T a[], int flag = 1) {
-    for (int i = 0; i < len; ++i)
-      if (i < rev[i]) swap(a[i], a[rev[i]]);
-    for (int base = 1; base < len; base <<= 1) {
-      long long wn = qpow(G, (MOD-1)/(base*2)), w;
-      if (flag == -1) wn = qpow(wn, MOD-2);
-      for (int i = 0; i < len; i += base*2) {
-        w = 1;
-        for (int j = 0; j < base; ++j) {
-          long long x = a[i+j], y = w*a[i+j+base]%MOD;
-          a[i+j] = (x+y)%MOD;
-          a[i+j+base] = (x-y+MOD)%MOD;
-          w = w*wn%MOD;
-        }
-      }
+int implicant(int n, char *a, char *b) {
+  int count = 0, temp;
+  for (int i = 0; i < n; ++i) {
+    if (a[i] != b[i]) {
+      count++;
+      temp = i;
     }
   }
-  template <class T>
-  void work(T a[], const int &n, T b[], const int &m) {
-    len = 1; bit = 0;
-    while (len < n+m) len <<= 1, ++bit;
-    for (int i = 0; i < n; ++i) f[i] = a[i];
-    for (int i = n; i < len; ++i) f[i] = 0;
-    for (int i = 0; i < m; ++i) g[i] = b[i];
-    for (int i = m; i < len; ++i) g[i] = 0;
-    for (int i = 0; i < len; ++i)
-      rev[i] = (rev[i>>1]>>1)|((i&1)<<(bit-1));
-    ntt(f, 1); ntt(g, 1);
-    for (int i = 0; i < len; ++i) f[i] = f[i]*g[i]%MOD;
-    ntt(f, -1);
-    long long inv = qpow(len, MOD-2);
-    for (int i = 0; i < n+m-1; ++i) f[i] = f[i]*inv%MOD;
-  }
+  if (count == 1) return temp;
+  else return -1;
 }
 
-void stirling(const int &n) {
-  inv[0] = inv[1] = 1;
-  for(int i = 2; i <= n; ++i)
-    inv[i] = MOD-MOD/i*inv[MOD%i]%MOD;
-  for (int i = 1; i <= n; ++i)
-    inv[i] = inv[i-1]*inv[i]%MOD;
-  while (len <= (n<<1)) len <<= 1, ++bit;
-  for (int i = 0; i < len; ++i)
-    rev[i] = (rev[i>>1]>>1)|((i&1)<<(bit-1));
-  for (int i = 0, one = 1; i <= n; ++i, one = MOD-one) {
-    f[i] = one*inv[i]%MOD;
-    g[i] = qpow(i, n)*inv[i]%MOD;
+bool cointain(int n, char *a, char *b) {
+  for (int i = 0; i < n; ++i) {
+    if (a[i] != b[i] && (a[i] != '-')) return false;
   }
-  NTT(f, 1); NTT(g, 1);
-  for (int i = 0; i < len; ++i) f[i] = f[i]*g[i]%MOD;
-  NTT(f, -1);
-  long long invv = qpow(len, MOD-2);
-  for (int i = 0; i <= n; ++i)
-    printf("%lld%c", f[i]*invv%MOD, " \n"[i==n]);
-}
-
-int q, n, m;
-
-inline bool solve() {
-  cin >> q >> n >> m;
-  stirling(n);
-  for (int i = 1, x; i <= q; ++i) {
-    cin >> x;
-    cout << res[x] << '\n';
-  }
+  return true;
 }
 
 signed main() {
-#ifdef ONLINE_JUDGE
-  ios::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr);
-#endif
-  int T = 1;
-  cin >> T; // scanf("%d", &T);
-  for (int t = 1; t <= T; ++t) {
-    cout << (solve() ? "Yes" : "No") << '\n';
+  int n, count, tmp;
+  char *temp;
+  bool flag[2];
+  vector<char*> v[10];
+  vector<char*> relative;
+  vector<char*> prime;
+  vector<char*> result;
+
+  cout << "输入变量数：\n";
+  cin >> n;
+
+  temp = new char[n];
+  cout << "请输入最小项(2结束)\n";
+  flag[0] = true;
+  while (flag[0]) {
+    for (int i = 0; i < n; ++i) {
+      cin >> temp[i];
+      if (temp[i] != '0' && temp[i] != '1') {
+        flag[0] = false;
+        break;
+      }
+    }
+    if (flag[0]) {
+      v[0].emplace_back(new char[n]);
+      relative.emplace_back(new char[n]);
+      strcpy(v[0].back(), temp);
+      strcpy(relative.back(), temp);
+    }
   }
+  cout << "请输入无关项(2结束)\n";
+  flag[0] = true;
+  while (flag[0]) {
+    for (int i = 0; i < n; ++i) {
+      cin >> temp[i];
+      if (temp[i] != '0' && temp[i] != '1') {
+        flag[0] = false;
+        break;
+      }
+    }
+    if (flag[0]) {
+      v[0].emplace_back(new char[n]);
+      strcpy(v[0].back(), temp);
+    }
+  }
+  for (int i = 0; i < 10; ++i) {
+    if (v[i].empty()) break;
+    for (int j = 0; j < (int)v[i].size(); ++j) {
+      flag[0] = false;
+      for (int k = 0; k < (int)v[i].size(); ++k) {
+        if (implicant(n ,v[i][j], v[i][k]) != -1) {
+          strcpy(temp, v[i][j]);
+          temp[implicant(n, v[i][j], v[i][k])] = '-';
+          flag[1] = true;
+          flag[0] = true;
+          for (int l = 0; l < (int)v[i+1].size(); ++l) {
+            if (!strcmp(v[i+1][l], temp)) flag[1] = false;
+          }
+          if (flag[1]) {
+            v[i+1].emplace_back(new char[n]);
+            strcpy(v[i+1].back(), temp);
+          }
+        }
+      }
+      if (!flag[0]) {
+        prime.emplace_back(new char[n]);
+        strcpy(prime.back(), v[i][j]);
+      }
+    }
+  }
+  for (int i = 0; i < (int)relative.size() && !relative.empty(); ++i) {
+    count = 0;
+    for (int j = 0; j < (int)prime.size() && !prime.empty(); ++j) {
+      if (comp(n, relative[i], prime[j])) {
+        count++;
+        tmp = j;
+      }
+    }
+    if (count == 1) {
+      result.emplace_back(new char[n]);
+      strcpy(result.back(), prime[tmp]);
+      for (int j = 0; j < (int)relative.size(); ++j) {
+        if (comp(n, relative[j], prime[tmp])) {
+          relative.erase(relative.begin()+j);
+          --j;
+        }
+      }
+      prime.erase(prime.begin()+tmp);
+      --i;
+    }
+  }
+  while (!relative.empty()) {
+    strcpy(temp, prime.back());
+    prime.pop_back();
+    count = 0;
+    for (int i = 0; i < (int)relative.size(); ++i) {
+      if (comp(n, relative[i], temp)) {
+        relative.erase(relative.begin()+i);
+        --i;
+        ++count;
+      }
+    }
+    if (count > 0) {
+      result.emplace_back(new char[n]);
+      strcpy(result.back(), temp);
+    }
+  }
+  while (result.size()) {
+    for (int i = 0; i < 4; ++i) {
+      cout << *(result.back()+i);
+    }
+    cout << ' ';
+    result.pop_back();
+  }
+  cout << '\n';
+  system("pause");
   return 0;
 }
+/*
+4
+0100
+0101
+0110
+1000
+1001
+1010
+1101
+2
+0000
+1111
+0111
+2
+*/
