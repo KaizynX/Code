@@ -44,6 +44,4 @@
 
 # emmm
 /tmp
-test.cpp
-test.c
-test.py
+test*
