@@ -1,11 +1,11 @@
 /*
  * @Author: Kaizyn
- * @Date: 2021-07-07 20:54:55
- * @LastEditTime: 2021-07-08 13:34:27
+ * @Date: 2021-07-08 13:30:13
+ * @LastEditTime: 2021-07-08 13:31:55
  */
 #include <bits/stdc++.h>
 
-#define DEBUG
+// #define DEBUG
 
 using namespace std;
 
@@ -30,11 +30,23 @@ int dp[N][2][2];
 
 bool dfs(int u) {
   dfn[u] = ++_dfn;
+  for (int ui : {0, 1}) for (int uj : {0, 1}) dp[u][ui][uj] = ui;
   for (const int &v : e[u]) {
     if (v == fa[u]) continue;
     if (!dfn[v]) {
       fa[v] = u;
       if (!dfs(v)) return false;
+      for (int ui : {0, 1}) for (int uj : {0, 1}) {
+        int tmp = 0;
+        for (int vi : {0, 1}) for (int vj : {0, 1}) {
+          if (ui+vi > 1) continue;
+          if (from[v] && bm[from[v]] == v && vi != vj) continue;
+          if (from[v] && tp[from[v]] == u && (vi|vj)+ui > 1) continue;
+          if (from[u] && from[v] && from[u] == from[v] && uj != vj) continue;
+          tmp = max(tmp, dp[v][vi][vj]);
+        }
+        dp[u][ui][uj] += tmp;
+      }
     } else if (dfn[v] < dfn[u]) {
       ++cnt;
       tp[cnt] = v; bm[cnt] = u;
@@ -47,30 +59,6 @@ bool dfs(int u) {
   return true;
 }
 
-void tree_dp(int u) {
-  for (int ui : {0, 1}) for (int uj : {0, 1}) dp[u][ui][uj] = ui;
-  for (int &v : e[u]) if (v != fa[u] && dfn[v] > dfn[u]) {
-    if (bm[from[v]] == v && tp[from[v]] == u) continue;
-    tree_dp(v);
-    for (int ui : {0, 1}) for (int uj : {0, 1}) {
-      int tmp = 0;
-      for (int vi : {0, 1}) for (int vj : {0, 1}) {
-        if (ui+vi > 1) continue;
-        if (from[v] && bm[from[v]] == v && vi != vj) continue;
-        if (from[v] && tp[from[v]] == u && (vi|vj)+ui > 1) continue;
-        if (from[u] && from[v] && from[u] == from[v] && uj != vj) continue;
-        tmp = max(tmp, dp[v][vi][vj]);
-      }
-      dp[u][ui][uj] += tmp;
-    }
-  }
-#ifdef DEBUG
-  cout << u << ':';
-  for (int ui : {0, 1}) for (int uj : {0, 1}) cout << dp[u][ui][uj] << ' ';
-  cout << '\n';
-#endif
-}
-
 inline void solve() {
   cin >> n >> m;
   for (int i = 1, u, v; i <= m; ++i) {
@@ -79,10 +67,6 @@ inline void solve() {
     e[v].emplace_back(u);
   }
   dfs(1);
-#ifdef DEBUG
-  for (int i = 1; i <= n; ++i) cout << dfn[i] << " \n"[i==n];
-#endif
-  tree_dp(1);
   cout << max({dp[1][0][0], dp[1][0][1], dp[1][1][0], dp[1][1][1]}) << '\n';
 }
 
