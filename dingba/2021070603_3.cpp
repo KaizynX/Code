@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
- * @Date: 2021-07-08 13:09:05
- * @LastEditTime: 2021-07-08 20:28:10
+ * @Date: 2021-07-08 20:30:52
+ * @LastEditTime: 2021-07-08 20:35:26
  */
 #include <bits/stdc++.h>
 
@@ -21,7 +21,7 @@ const int N = 1e5+7;
 int n, m;
 vector<int> e[N];
 // f[i][j][x][y] 结点i与父亲边,边权j,所在环边权和%2=x,环非树边权y
-int f[N][3][2][3];
+int f[N][3][2][3], buf[N][2][1<<3][3][2][3];
 int _dfn, cnt, fa[N], dfn[N], from[N], tp[N], bm[N];
 
 void update(int &x, const int &y) {
@@ -29,10 +29,11 @@ void update(int &x, const int &y) {
 }
 
 bool dfs(int u) {
-  int h[1<<3][3][2][3], g[1<<3][3][2][3];
+  // int h[1<<3][3][2][3], g[1<<3][3][2][3];
+  auto h = buf[u][0], g = buf[u][1];
   dfn[u] = ++_dfn;
   memset(f[u], -1, sizeof(f[u]));
-  memset(h, -1, sizeof h);
+  memset(h, -1, sizeof(int)*144);
   // 初始,先不统计u父亲边
   for (int uj : {0, 1, 2}) for (int uy : {0, 1, 2})
     h[1<<uj][uj][0][uy] = 0;
@@ -42,9 +43,8 @@ bool dfs(int u) {
       fa[v] = u;
       if (!dfs(v)) return false;
       swap(g, h); // memcpy(g, h, sizeof h);
-      memset(h, -1, sizeof h); // v必须选
+      memset(h, -1, sizeof(int)*144); // v必须选
       for (int us = 0; us < 8; ++us) for (int uj : {0, 1, 2}) {
-        // if ((us>>((4-uj)%3))%2 == 1 || (us>>uj)%2 == 0) continue; // 条件1
         for (int ux : {0, 1}) for (int uy : {0, 1, 2})
         for (int vj : {0, 1, 2}) if ((us>>((4-vj)%3))%2 == 0)
         for (int vx : {0, 1}) for (int vy : {0, 1, 2}) {
@@ -77,7 +77,6 @@ bool dfs(int u) {
   }
   // 若u为环底部,则将y统计进答案
   for (int us = 0; us < 8; ++us) for (int uj : {0, 1, 2}) {
-    // if ((us>>((4-uj)%3))&1) continue; // 条件1
     for (int ux : {0, 1}) for (int uy : {0, 1, 2}) {
       if (h[us][uj][ux][uy] == -1) continue;
       if (u == bm[from[u]]) {
