@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
- * @Date: 2021-07-09 23:19:33
- * @LastEditTime: 2021-07-10 11:41:03
+ * @Date: 2021-07-10 14:48:43
+ * @LastEditTime: 2021-07-10 16:13:06
  */
 #include <bits/stdc++.h>
 
@@ -183,67 +183,58 @@ using Mint = Modular<VarMod>;
 constexpr int md = 1e9+7;
 using Mint = Modular<std::integral_constant<decay<decltype(md)>::type, md>>;
 
-#ifdef DEBUG
-const int N = 6;
-#else
-const int N = 6;
-#endif
-typedef unsigned long long ull;
-// typedef unordered_map<ull, Mint> mp;
-typedef map<ull, Mint> mp;
+const int N = 3e2+7;
+const int A = 1e5+7;
 
-int n, m;
-// dp[][c][v] 轮廓线上颜色为c
-mp dp[2][1<<N];
+int n;
+int a[N][N], cnt[A];
+vector<int> choose[N<<1];
+Mint res;
+Mint dp[N][N];
+
+void dfs(int k) {
+  if (k == n+n) {
+    dp[n][n] = dp[n-1][n]+dp[n][n-1];
+    res += dp[n][n]*dp[n][n]-dp[n][n];
+    return;
+  }
+  for (int v : choose[k]) {
+    int flag = 0;
+    for (int i = max(k-n, 1), j; i < k; ++i) {
+      j = k-i;
+      dp[i][j] = a[i][j] == v ? dp[i-1][j]+dp[i][j-1] : 0;
+      if (dp[i][j] != 0) flag = 1;
+    }
+    if (flag) dfs(k+1);
+  }
+}
 
 inline void solve() {
-  cin >> n >> m;
-  int u = 0;
-  ull all = 1ULL<<((1<<n)-1);
-  dp[u][0][all] = 1;
-  for (int i = 0; i < m; ++i) for (int j = 0; j < n; ++j) {
-    u ^= 1;
-#ifdef DEBUG
-    cout << "[" << i << "," << j << "]\n";
-#endif
-    for (int c = 0; c < 1<<n; ++c) dp[u][c].clear();
-    for (int c = 0; c < 1<<n; ++c) { // 轮廓线上颜色
-      for (const auto &plm : dp[u^1][c]) {
-        ull f = plm.first;
-        Mint val = plm.second;
-#ifdef DEBUG
-        cout << "dp[u^1][" << bitset<N>(c) << "]["
-            << bitset<1<<N>(f)  << "]=" << val << '\n';
-#endif
-        for (int cc : {0, 1}) { // [i,j]的颜色为cc
-          int nc = c^(c&(1<<j))^(cc<<j);
-          ull nf = 0;
-          for (int k = 0; k < 1<<n; ++k) if ((f>>k)&1) {
-            if ((k>>j)%2 == 0) { // 上面为空则必填
-              if (((c>>j)&1)^cc) nf |= 1ULL<<(k|(1<<j));
-            } else {
-              if (j && (k>>(j-1))%2 == 0) { // 左边为空选填
-                if (((c>>(j-1))&1)^cc) nf |= 1ULL<<(k|(3<<(j-1)));
-              }
-              nf |= 1ULL<<(k^(1<<j)); // 不填
-            }
-          }
-          if (nf == 0) continue;
-          dp[u][nc][nf] += val;
-#ifdef DEBUG
-          cout << "+" << cc << "->dp[u][" << bitset<N>(nc) << "]["
-              << bitset<1<<N>(nf) << "]=" << dp[u][nc][nf] << '\n';
-#endif
-        }
-      }
+  cin >> n;
+  for (int i = 1; i <= n; ++i) {
+    for (int j = 1; j <= n; ++j) {
+      cin >> a[i][j];
     }
   }
-  Mint res = 0;
-  for (int c = 0; c < 1<<n; ++c) {
-    for (const auto &plm : dp[u][c]) {
-      if (plm.first&all) res += plm.second;
+  int flag = 1;
+  for (int k = 3; k < n+n; ++k) {
+    for (int i = max(k-n, 1), j; i < k; ++i) {
+      j = k-i;
+      if (++cnt[a[i][j]] > 1) choose[k].emplace_back(a[i][j]);
+    }
+    sort(choose[k].begin(), choose[k].end());
+    choose[k].erase(unique(choose[k].begin(), choose[k].end()), choose[k].end());
+    if (choose[k].empty()) flag = 0;
+    for (int i = max(k-n, 1); i < k; ++i) --cnt[a[i][k-i]];
+  }
+  dp[0][1] = 1;
+  for (int i = 1; i <= n; ++i) {
+    for (int j = 1; j <= n; ++j) {
+      dp[i][j] = dp[i-1][j]+dp[i][j-1];
     }
   }
+  res = dp[n][n];
+  if (flag) dfs(3);
   cout << res << '\n';
 }
 
