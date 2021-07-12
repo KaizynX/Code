@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
  * @Date: 2021-07-11 17:50:40
- * @LastEditTime: 2021-07-11 22:04:37
+ * @LastEditTime: 2021-07-12 12:28:43
  */
 #include <bits/stdc++.h>
 
@@ -29,6 +29,7 @@ struct Tree {
     ll s[2];  // r+1不选/选时中间选的和
   } tr[N<<2];
   void build(int l, int r, int i = 1) {
+    rt.l = l; rt.r = r;
     rt.g[0] = rt.g[1] = 0;
     rt.c[0] = rt.c[1] = 0;
     rt.s[0] = rt.s[1] = 0;
@@ -42,8 +43,8 @@ struct Tree {
     rt.g[1] = lc.g[rc.g[1]];
     rt.c[0] = rc.c[0]+lc.c[rc.g[0]];
     rt.c[1] = rc.c[1]+lc.c[rc.g[1]];
-    rt.s[0] = rc.s[0]+lc.c[rc.g[0]];
-    rt.s[1] = rc.s[1]+lc.c[rc.g[1]];
+    rt.s[0] = rc.s[0]+lc.s[rc.g[0]];
+    rt.s[1] = rc.s[1]+lc.s[rc.g[1]];
   }
   void update(int x, int v, int i = 1) {
     if (rt.l == rt.r) {
@@ -59,9 +60,19 @@ struct Tree {
   }
   ll query(int k, int rg = 0, int i = 1) {
     if (rt.l == rt.r) return rt.s[rg];
-    if (rc.c[rg] > k) return query(k, rg, i<<1|1);
+    if (rc.c[rg] >= k) return query(k, rg, i<<1|1);
     return rc.s[rg]+query(k-rc.c[rg], rc.g[rg], i<<1);
   }
+#ifdef DEBUG
+  void print(int i = 1) {
+    if (rt.l < rt.r) {
+      print(i<<1);
+      print(i<<1|1);
+    }
+    printf("tr[%d](%d,%d)g=%d,%d,c=%d,%d,s=%lld,%lld\n",
+        i, rt.l, rt.r, rt.g[0], rt.g[1], rt.c[0], rt.c[1], rt.s[0], rt.s[1]);
+  }
+#endif
 };
 
 struct Query {
@@ -94,11 +105,15 @@ inline void solve() {
   }
   sort(q+1, q+m+1);
   for (int i = 1, j = 1; i <= m; ++i) {
-    while (j <= n && a[i].first <= q[i].a) {
+    while (j <= n && a[j].first <= q[i].a) {
       tree.update(
           lower_bound(skill+1, skill+n+1, a[j].second)-skill,
           a[j].second
       );
+#ifdef DEBUG
+      printf("*****a[%d]={%d,%d}*****\n", j, a[j].first, a[j].second);
+      tree.print();
+#endif
       ++j;
     }
     res[q[i].id] = tree.query(q[i].k);

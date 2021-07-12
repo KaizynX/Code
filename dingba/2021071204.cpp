@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
- * @Date: 2021-07-12 00:20:46
- * @LastEditTime: 2021-07-12 12:41:42
+ * @Date: 2021-07-12 13:38:37
+ * @LastEditTime: 2021-07-12 13:47:38
  */
 #include <bits/stdc++.h>
 
@@ -16,22 +16,24 @@ typedef long long ll;
 const int MOD = 998244353; // 1e9+7;
 const int INF = 0x3f3f3f3f;
 // const ll INF = 1e18;
-const int N = 1e5+7;
+const int N = 1e6+7;
 
 int n;
-int a[N], c[N][2];
+int l[N], r[N];
+multiset<int> st;
 
-inline bool solve() {
+inline void solve() {
   cin >> n;
-  for (int i = 1; i <= n; ++i) {
-    cin >> a[i];
-    ++c[a[i]][i&1];
+  int res = 0;
+  for (int i = 1, j = 1; i <= n; ++i) {
+    cin >> l[i] >> r[i];
+    st.insert(l[i]);
+    while (*st.rbegin() > r[i]) {
+      st.erase(st.find(l[j++]));
+    }
+    res = max(res, i-j+1);
   }
-  sort(a+1, a+n+1);
-  for (int i = 1; i <= n; ++i) {
-    if (--c[a[i]][i&1] < 0) return false;
-  }
-  return true;
+  cout << res << '\n';
 }
 
 signed main() {
@@ -39,12 +41,9 @@ signed main() {
   ios::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr);
 #endif
   int T = 1;
-  cin >> T; // scanf("%d", &T);
+  // cin >> T; // scanf("%d", &T);
   for (int t = 1; t <= T; ++t) {
-    cout << (solve() ? "YES" : "NO") << '\n';
-    for (int i = 1; i <= n; ++i) {
-      c[a[i]][0] = c[a[i]][1] = 0;
-    }
+    solve();
   }
   return 0;
 }
