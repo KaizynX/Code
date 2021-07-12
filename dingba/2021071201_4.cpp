@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
  * @Date: 2021-07-12 17:14:44
- * @LastEditTime: 2021-07-12 17:20:58
+ * @LastEditTime: 2021-07-12 18:35:42
  */
 #include <bits/stdc++.h>
 
@@ -39,7 +39,7 @@ inline int solve() {
   }
   int b[3];
   for (int i = 1; i <= n; ++i) {
-    for (int j = 0; j < 3; ++j) b[i] = a[i][j]/d[j];
+    for (int j = 0; j < 3; ++j) b[j] = a[i][j]/d[j];
     for (int x = b[0]-1; x <= b[0]+1; ++x)
     for (int y = b[1]-1; y <= b[1]+1; ++y)
     for (int z = b[2]-1; z <= b[2]+1; ++z) {
