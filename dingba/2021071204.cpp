@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
  * @Date: 2021-07-12 13:38:37
- * @LastEditTime: 2021-07-12 13:47:38
+ * @LastEditTime: 2021-07-13 13:17:06
  */
 #include <bits/stdc++.h>
 
@@ -20,16 +20,36 @@ const int N = 1e6+7;
 
 int n;
 int l[N], r[N];
-multiset<int> st;
+struct Heap{
+	priority_queue<int> a,b;  // heap=a-b
+	void push(int x){a.push(x);}
+	void erase(int x){b.push(x);}
+	int top(){
+		while(!b.empty() && a.top()==b.top())
+			a.pop(),b.pop();
+		return a.top();
+	}
+	void pop(){
+		while(!b.empty() && a.top()==b.top())
+			a.pop(),b.pop();
+		a.pop();
+	}
+	int top2(){ // 次大值
+		int t=top(); pop();
+		int ans=top(); push(t);
+		return ans;
+	}
+	int size(){return a.size()-b.size();}
+} st;
 
 inline void solve() {
   cin >> n;
   int res = 0;
   for (int i = 1, j = 1; i <= n; ++i) {
     cin >> l[i] >> r[i];
-    st.insert(l[i]);
-    while (*st.rbegin() > r[i]) {
-      st.erase(st.find(l[j++]));
+    st.push(l[i]);
+    while (st.top() > r[i]) {
+      st.erase(l[j++]);
     }
     res = max(res, i-j+1);
   }
