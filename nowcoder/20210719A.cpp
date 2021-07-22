@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
  * @Date: 2021-07-19 22:58:04
- * @LastEditTime: 2021-07-19 23:42:36
+ * @LastEditTime: 2021-07-20 23:42:39
  */
 #include <bits/stdc++.h>
 
@@ -91,8 +91,8 @@ private :
 };
 
 int n;
-// g[i] the gcd(b[i, r])
-int a[N], b[N], g[N];
+int a[N], b[N];
+vector<pii> g, mx, mn;
 SegmentTree<int> tree;
 
 inline void solve() {
@@ -100,22 +100,28 @@ inline void solve() {
   for (int i = 1; i <= n; ++i) cin >> a[i];
   for (int i = 1; i < n; ++i) b[i] = a[i+1]-a[i];
   tree.build(n);
-  ll res = 0;
-  for (int r = 1; r <= n; ++r) {
-    g[r] = a[r];
-    // 对于log个不同gcd值区间分别区间加gcd
-    // 单调栈维护?
+  ll res = n; // [i, i]
+  tree.build(n-1, INF);
+  for (int r = 1, l, tmp; r < n; ++r) {
     // 对于gcd改变的点暴力单点修改
     // 每个点至多改变log次,总复杂度nlog^2
-    for (int l = r-1; l; --l) {
-      if (__gcd(g[l], b[r]) != g[l]) {
-        tree.modify(l, );
-      } else {
-        break;
+    l = r-1;
+    while (g.size() && (tmp = __gcd(g.back().second, b[r])) != g.back().second) {
+      while (l >= g.back().first) {
+        tree.add(l, (r-l)*(tmp-g.back().second)+tmp);
       }
+      g.pop();
+    }
+    tree.modify(r, b[r]);
+    g.push(pii{r, b[r]});
+    // 对于log个不同gcd值区间分别区间加gcd
+    for (int i = 1; i < (int)g.size(); ++i) {
+      tree.add(g[i-1].first, g[i].first-1, g[i-1].second);
     }
     // 单调栈max min
-
+    while (mx.size() && a[r] > mx.back().second) {
+      ;
+    }
     // 询问值为0的个数
     res += tree.query();
   }
