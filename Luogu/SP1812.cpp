@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
  * @Date: 2021-07-25 20:46:36
- * @LastEditTime: 2021-07-25 21:38:01
+ * @LastEditTime: 2021-07-26 23:51:25
  */
 #include <bits/stdc++.h>
 
@@ -57,6 +57,7 @@ struct SAM {
         int clone = sz++;
         st[clone] = st[q];
         st[clone].len = st[p].len+1;
+        f[clone] = st[clone].len;
         while (~p && st[p].nex[c-C] == q) {
           st[p].nex[c-C] = clone;
           p = st[p].link;
@@ -67,8 +68,9 @@ struct SAM {
     last = cur;
   }
   void sort() {
+    // memset(f, 0x3f, sizeof f);
     for (int i = 0; i < sz; ++i) ++c[st[i].len];
-    for (int i = 1; i < sz; ++i) c[i] += c[i-1];
+    for (int i = 1; i <= sz; ++i) c[i] += c[i-1];
     for (int i = 0; i < sz; ++i) b[--c[st[i].len]] = i;
   }
   void update(const string &t) {
@@ -83,21 +85,15 @@ struct SAM {
         ++l;
       } else {
         assert(v == 0);
+        v = l = 0;
       }
       g[v] = max(g[v], l);
+      assert(g[v] <= st[v].len);
     }
-    /*
-    for (int i = sz-1, fa; i >= 0; --i) {
-      fa = st[i].link;
-      if (~fa) g[fa] = max(g[fa], g[i]);
-      f[i] = min(f[i], g[i]);
-      g[i] = 0;
-    }
-    */
     for (int i = sz-1, fa; i >= 0; --i) {
       v = b[i];
       fa = st[v].link;
-      if (~fa) g[fa] = max(g[fa], g[v]);
+      if (~fa) g[fa] = max(g[fa], min(st[fa].len, g[v]));
       f[v] = min(f[v], g[v]);
       g[v] = 0;
     }
