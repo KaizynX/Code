@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
  * @Date: 2021-07-31 09:27:36
- * @LastEditTime: 2021-07-31 09:31:56
+ * @LastEditTime: 2021-07-31 17:22:49
  */
 #include <bits/stdc++.h>
 
@@ -66,7 +66,7 @@ struct HLD {
   BIT t_xor, t_sum;
   void build(vector<pii> e[], const int &rt = 1) {
     this->e = e;
-    fa[rt] = dfn = 0;
+    fa[rt] = 0;
     dfs1(rt);
     dfs2(rt);
   }
