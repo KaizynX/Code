@@ -1,20 +1,16 @@
 /*
  * @Author: Kaizyn
- * @Date: 2021-07-31 20:02:38
- * @LastEditTime: 2021-08-06 17:26:50
+ * @Date: 2021-08-06 17:28:11
+ * @LastEditTime: 2021-08-06 17:33:11
  */
-#include <cstring>
-#include <iostream>
-#include <algorithm>
+#include <bits/stdc++.h>
 
 // #define DEBUG
 
 using namespace std;
 
 typedef long long ll;
-const int N = 1e5+7;
-
-int k;
+const int N = 2e5+7;
 
 struct SAM {
   static const int A = 26;
@@ -83,54 +79,45 @@ struct SAM {
       if (!i) continue;
       j = st[i].link;
       dp[i] = dp[j];
-      if (st[i].len >= k) {
-        dp[i] += 1ll*min(st[i].len-st[j].len, st[i].len-k+1)*cnt[i];
-      }
+      dp[i] += 1ll*(st[i].len-st[j].len)*cnt[i];
     }
     #ifdef DEBUG
     for (int i = 0; i < sz; ++i) cout << cnt[i] << " \n"[i==sz-1];
     for (int i = 0; i < sz; ++i) cout << dp[i] << " \n"[i==sz-1];
     #endif
   }
-  ll solve(const string &s) {
+  ll solve(const string s) {
+    int x = 0, l = 0, y;
     ll res = 0;
-    for (int i = 0, c, x = 0, l = 0, y; i < (int)s.size(); ++i) {
-      c = s[i]-C;
+    for (char ch : s) {
+      int c = ch-C;
       while (x && !st[x].nex[c]) {
         x = st[x].link;
         l = st[x].len;
       }
       if (st[x].nex[c]) {
-        ++l;
         x = st[x].nex[c];
+        ++l;
       }
       if (!x) continue;
       y = st[x].link;
       res += dp[y];
-      if (l >= k) res += 1ll*min(l-st[y].len, l-k+1)*cnt[x];
+      res += 1ll*(l-st[y].len)*cnt[x];
       #ifdef DEBUG
       printf("i=%d,x=%d,l=%d,cnt=%d,res=%lld\n", i, x, l, cnt[x], res);
       #endif
     }
     return res;
   }
-};
+} sam;
 
-string A, B;
-SAM sam;
-
-inline void solve() {
-  cin >> A >> B;
-  sam.init();
-  for (int i = 0; i < (int)A.size(); ++i) sam.extend(A[i]);
-  sam.build();
-  cout << sam.solve(B) << '\n';
-}
+string S, T;
 
 signed main() {
-#ifdef ONLINE_JUDGE
-  ios::sync_with_stdio(false); cin.tie(0); cout.tie(0);
-#endif
-  while (cin >> k && k) solve();
+  cin >> S >> T;
+  sam.init();
+  for (char ch : S) sam.extend(ch);
+  sam.build();
+  cout << sam.solve(T) << '\n';
   return 0;
 }
