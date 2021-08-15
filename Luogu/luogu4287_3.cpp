@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
  * @Date: 2021-08-11 17:59:00
- * @LastEditTime: 2021-08-11 18:17:07
+ * @LastEditTime: 2021-08-15 17:08:47
  */
 #include <bits/stdc++.h>
 
@@ -36,7 +36,8 @@ struct PAM {
     sz = -1;
     last = 0;
     s[tot = 0] = '$';
-    fail[node(0)] = node(-1);
+    node(0);
+    fail[0] = node(-1);
   }
   int getfail(int x) {
     while (s[tot-len[x]-1] != s[tot]) x = fail[x];
