@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
  * @Date: 2021-08-25 17:04:27
- * @LastEditTime: 2021-08-25 17:27:42
+ * @LastEditTime: 2021-08-26 14:44:11
  */
 #include <bits/stdc++.h>
 
@@ -24,7 +24,7 @@ std::ostream &operator<<(std::ostream &o,const std::pair<A,B> &x){
 
 typedef long long ll;
 typedef pair<int, int> pii;
-const double eps = 1e-7;
+const double eps = 1e-6;
 const double PI = acos(-1);
 const int MOD = 998244353; // 1e9+7;
 const int INF = 0x3f3f3f3f;
@@ -81,7 +81,9 @@ struct Aho_Corasick_Automaton {
     double nv = dp[i][j]+val[nj];
     if (nv > dp[i+1][nj]) {
       dp[i+1][nj] = nv;
-      path[i+1][nj] = pii{j, k};
+      // path[i+1][nj] = pii{j, k};
+      path[i+1][nj].first = j;
+      path[i+1][nj].second = k;
     }
   }
   bool check(double mid) {
@@ -136,7 +138,7 @@ signed main() {
     if (ac.check(mid)) l = mid;
     else r = mid;
   }
-  ac.check((l+r)/2);
+  ac.check(l);
   cout << ac.print() << '\n';
   return 0;
 }

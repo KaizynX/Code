@@ -1,11 +1,11 @@
 /*
  * @Author: Kaizyn
  * @Date: 2021-08-25 20:51:55
- * @LastEditTime: 2021-08-25 21:10:40
+ * @LastEditTime: 2021-08-26 13:16:23
  */
 #include <bits/stdc++.h>
 
-#define DEBUG
+// #define DEBUG
 
 using namespace std;
 namespace hjt {
@@ -88,6 +88,14 @@ struct SAM { // root 0
 string s, t;
 SAM sams, samt;
 
+int f(int si, int ti, int l) {
+  si = sams.mnl[si];
+  ti = samt.mnl[ti];
+  if (si == -1 || ti == -1) return -1;
+  si = max(si, ti);
+  return si <= l ? si : -1;
+}
+
 signed main() {
 #ifdef ONLINE_JUDGE
   ios::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr);
@@ -98,13 +106,15 @@ signed main() {
   sams.build();
   samt.build();
   int ans = -1;
-  for (int si = 0, ti = 0, l = 0; si < (int)s.size(); ++si) {
-    int c = s[si]-'a';
+  for (int i = 0, si = 0, ti = 0, l = 0; i < (int)s.size(); ++i) {
+    int c = s[i]-'a';
+    si = sams.nex[si][c];
     while (ti && !samt.nex[ti][c]) l = samt.len[ti = samt.link[ti]];
     if (samt.nex[ti][c]) ti = samt.nex[ti][c], ++l;
-    int tmp = sams.mnl[si];
-    update(tmp, samt.mnl[ti]);
-    update(ans, tmp);
+    update(ans, f(si, ti, l));
+    #ifdef DEBUG
+    printf("i=%d,l=%d,ls=%d,lt=%d,ans=%d\n", i, l, sams.mnl[si], samt.mnl[ti], ans);
+    #endif
   }
   cout << ans << '\n';
   return 0;
