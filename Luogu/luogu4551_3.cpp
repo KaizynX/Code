@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
- * @Date: 2021-08-26 15:02:01
- * @LastEditTime: 2021-08-27 13:16:21
+ * @Date: 2021-08-27 13:16:59
+ * @LastEditTime: 2021-08-27 13:20:27
  */
 #include <bits/stdc++.h>
 
@@ -34,21 +34,17 @@ const int N = 1e5+7;
 struct TireTree {
   static const int SZ = 2;
   static const int B = 30;
-  typedef array<int, SZ> T;
-  vector<T> nex;
-  TireTree() { init(); }
-  void init() { nex.assign(1, T()); /* nex.reserve(N); */ }
-  void clear() { nex = vector<T>(); }
-  size_t size() const { return nex.size(); }
-  void extend(int &x) {
-    if (x != 0) return;
-    x = nex.size();
-    nex.emplace_back(T());
+  static const int NN = N*B;
+  int nex[NN][SZ], cnt;
+  void init() { clear(); }
+  void clear() {
+    memset(nex, 0, sizeof(int)*(cnt+1)*SZ);
+    cnt = 0;
   }
   void insert(int x) {
     for (int i = B, c, p = 0; i >= 0; --i) {
       c = (x>>i)&1;
-      extend(nex[p][c]);
+      if (!nex[p][c]) nex[p][c] = ++cnt;
       p = nex[p][c];
     }
   }
@@ -56,26 +52,10 @@ struct TireTree {
     int ans = 0;
     for (int i = B, c, p = 0; i >= 0; --i) {
       c = (x>>i)&1;
-      if (nex[p][c^1]) {
-        p = nex[p][c^1];
-        ans |= 1<<i;
-      } else {
-        p = nex[p][c];
-      }
+      if (!nex[p][c^1]) p = nex[p][c];
+      else p = nex[p][c^1], ans |= 1<<i;
     }
     return ans;
-  }
-  void dfs(const TireTree &t, int p = 0, int pt = 0) {
-    for (int c = 0; c < SZ; ++c) {
-      if (t.nex[pt][c] == 0) continue;
-      extend(nex[p][c]);
-      dfs(t, nex[p][c], t.nex[pt][c]);
-    }
-  }
-  void join(TireTree &t) {
-    if (t.size() < size()) swap(*this, t);
-    dfs(t);
-    t.clear();
   }
 };
 
@@ -118,7 +98,6 @@ void dfz(int u = 1) {
     mxs[v] = max(mxs[v], (int)pset.size()-siz[v]);
     if (mxs[v] < mxs[u]) u = v;
   }
-  tree.init();
   tree.insert(0);
   for (auto p : e[u]) {
     int v = p.first;
@@ -126,7 +105,7 @@ void dfz(int u = 1) {
     dfs<0>(v, u, p.second);
     dfs<1>(v, u, p.second);
   }
-  // tree.clear();
+  tree.clear();
   vis[u] = 1;
   for (auto p : e[u]) {
     int v = p.first;
