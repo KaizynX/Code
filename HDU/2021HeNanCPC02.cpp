@@ -1,11 +1,11 @@
 /*
  * @Author: Kaizyn
  * @Date: 2021-09-17 09:50:46
- * @LastEditTime: 2021-09-17 09:55:24
+ * @LastEditTime: 2021-09-21 15:13:25
  */
 #include <bits/stdc++.h>
 
-#define DEBUG
+// #define DEBUG
 
 using namespace std;
 namespace hjt {
@@ -50,14 +50,23 @@ inline void solve() {
   #ifdef DEBUG
   orzarr(nex, n+1);
   #endif
-  ll ans = 1;
   for (int i = 1; i <= n; ++i) {
-    f[i] = max(0, (nex[i]*2-i)/k);
-    ans = ans*(f[i]+1)%MOD;
+    f[i] = i%k == 0;
+    int j = nex[i];
+    int d = i-j;
+    if (j+j <= i) continue;
+    j = nex[j];
+    if (j+j > i && j-nex[j] == d) {
+      f[i] += f[j];
+    } else { // brute
+      for (j = nex[i]; j+j > i; j = nex[j]) f[i] += (j+j-i)%k == 0;
+    }
   }
   #ifdef DEBUG
   orzarr(f, n+1);
   #endif
+  ll ans = 1;
+  for (int i = 1; i <= n; ++i) ans = ans*(f[i]+1)%MOD;
   cout << ans << '\n';
 }
 
