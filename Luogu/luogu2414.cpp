@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
  * @Date: 2021-09-22 18:54:51
- * @LastEditTime: 2021-09-22 19:51:41
+ * @LastEditTime: 2021-09-26 16:26:33
  */
 #include <bits/stdc++.h>
 
@@ -82,12 +82,13 @@ inline void solve() {
     cin >> x >> y;
     q[y].emplace_back(i, x);
   }
+  int id = 0;
   stk = vector<int>(1, 0);
   for (char ch : s) {
     if (ch == 'B') {
       if (stk.size() > 1u) stk.pop_back();
     } else if (ch == 'P') {
-      continue;
+      pos[++id] = stk.back();
     } else {
       int c = ch-'a', p = stk.back();
       if (!nex[p][c]) nex[p][c] = ++cnt;
@@ -96,7 +97,7 @@ inline void solve() {
   }
   build();
   dfs();
-  int id = 0;
+  id = 0;
   tree.init(dfn);
   stk = vector<int>(1, 0);
   for (char ch : s) {
@@ -105,7 +106,7 @@ inline void solve() {
       tree.add(L[stk.back()], -1);
       stk.pop_back();
     } else if (ch == 'P') {
-      pos[++id] = stk.back();
+      ++id;
       for (auto pr : q[id]) {
         int th = pr.first, x = pr.second;
         res[th] = tree.query(L[pos[x]], R[pos[x]]);
