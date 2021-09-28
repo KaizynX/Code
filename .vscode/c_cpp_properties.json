@@ -4,7 +4,7 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:/MinGW/lib/gcc/x86_64-w64-mingw32/9.2.0/**",
+                // "C:/MinGW/lib/gcc/x86_64-w64-mingw32/9.2.0/**",
                 "C:/MinGW/include/**",
                 "C:/MinGW/bin/**"
             ],
@@ -19,13 +19,13 @@
             "browse": {
                 "path": [
                     "${workspaceFolder}/**",
-                    "C:/MinGW/lib/gcc/x86_64-w64-mingw32/9.2.0/**",
+                    // "C:/MinGW/lib/gcc/x86_64-w64-mingw32/9.2.0/**",
                     "C:/MinGW/include/**"
                 ]
             },
             "compilerPath": "C:/MinGW/bin/g++.exe",
-            "cStandard": "c11",
-            "cppStandard": "c++11"
+            "cStandard": "c17",
+            "cppStandard": "c++17"
         }
     ],
     "version": 4
