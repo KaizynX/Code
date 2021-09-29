@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
  * @Date: 2021-09-28 16:39:22
- * @LastEditTime: 2021-09-28 18:04:55
+ * @LastEditTime: 2021-09-28 23:53:55
  */
 #include <bits/stdc++.h>
 
@@ -29,14 +29,15 @@ const double PI = acos(-1);
 const int MOD = 998244353; // 1e9+7;
 const int INF = 0x3f3f3f3f;
 // const ll INF = 1e18;
+#define log(x) (31-__builtin_clz(x))
 const int N = 2e5+7;
 const int M = N<<1;
 const int LOG = log(M)+3;
-#define log(x) (31-__builtin_clz(x))
 
 string s;
 int n, m, na, nb;
-int a[N], b[N], lena[N];
+int a[N], b[N], lena[N], deg[M];
+ll dis[M];
 vector<pii> e[M];
 
 struct SAM { // root 0
@@ -45,10 +46,10 @@ struct SAM { // root 0
   int sz, last, len[M], link[M], nex[M][A];
   int t[M], rk[M], fa[LOG][M], pos[N], dep[M];
   void init() {
-    e[0].clear();
-    for (int i = 1; i < sz; ++i) {
+    for (int i = 0; i <= sz+1; ++i) {
+      dis[i] = deg[i] = 0;
       e[i].clear();
-      for (int j = 0; j <= log(dep[i]); ++j) fa[j][i] = 0;
+      if (dep[i]) for (int j = 0; j <= log(dep[i]); ++j) fa[j][i] = 0;
     }
     memset(nex, 0, sizeof(int)*A*sz);
     link[0] = -1; sz = 1; last = 0;
@@ -87,7 +88,7 @@ struct SAM { // root 0
       j = link[i];
       fa[0][i] = j;
       dep[i] = dep[j]+1;
-      e[j].emplace_back(i, 0);
+      e[j].emplace_back(i, 0); ++deg[i];
       for (int k = 1; k <= log(dep[i]); ++i) {
         fa[k][i] = fa[k-1][fa[k-1][i]];
       }
@@ -95,7 +96,7 @@ struct SAM { // root 0
   }
   int get_pos(int l, int r) {
     int p = pos[r];
-    for (int i = 17; i >= 0; --i) {
+    for (int i = log(dep[p]); i >= 0; --i) {
       if (len[fa[i][p]] >= r-l+1) p = fa[i][p];
     }
     return p;
@@ -109,12 +110,13 @@ inline void solve() {
   sam.insert(s);
   sam.build();
   cin >> na;
+  int T = sam.sz;
   for (int i = 1, l, r; i <= na; ++i) {
     cin >> l >> r;
     lena[i] = r-l+1;
     a[i] = sam.get_pos(n-r+1, n-l+1);
-    e[BEGIN].emplace_back(a[i], 0);
-    e[a[i]].emplace_back(END, lena[i]);
+    // e[S].emplace_back(a[i], 0); ++deg[a[i]];
+    e[a[i]].emplace_back(T, lena[i]); ++deg[T];
   }
   cin >> nb;
   for (int i = 1, l, r; i <= nb; ++i) {
@@ -126,10 +128,21 @@ inline void solve() {
     cin >> x >> y;
     x = a[x];
     y = b[y];
-    e[x].emplace_back(y, lena[i]);
+    e[x].emplace_back(y, lena[x]); ++deg[y];
   }
-  // 清空e[begin, end]
-  // 清空fa[]
+  queue<int> q;
+  for (int i = 0; i <= T; ++i) if (!deg[i]) q.push(i);
+  while (q.size()) {
+    int u = q.front();
+    q.pop();
+    for (auto edge : e[u]) {
+      int v = edge.first;
+      int w = edge.second;
+      dis[v] = max(dis[v], dis[u]+w);
+      if (--deg[v] == 0) q.push(v);
+    }
+  }
+  cout << (q.size() ? -1 : dis[T]) << '\n';
 }
 
 signed main() {
