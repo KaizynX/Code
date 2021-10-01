@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
  * @Date: 2021-10-01 15:10:04
- * @LastEditTime: 2021-10-01 19:01:35
+ * @LastEditTime: 2021-10-01 19:01:51
  */
 #include <bits/stdc++.h>
 
@@ -30,28 +30,26 @@ const int MOD = 998244353; // 1e9+7;
 const int INF = 0x3f3f3f3f;
 // const ll INF = 1e18;
 #define log(x) (31-__builtin_clz(x))
-const int N = 2e5+7;
-const int M = N<<1;
-const int LOG = log(M)+3;
+const int N = 4e5+7;
+const int LOG = log(N)+2;
 
 char s[N];
-int n, m, na, nb;
-int a[N], b[N], lena[N], deg[M];
-ll dis[M];
-vector<pii> e[M];
+int n, m, na, nb, sz;
+int a[N], b[N], dep[N], lena[N], fa[N][LOG], endp[N], deg[N];
+ll dis[N];
+vector<pii> e[N];
 
 struct SAM { // root 0
   static const int A = 26;
   static const char C = 'a';
-  int sz, last, len[M], link[M], nex[M][A];
-  int t[M], rk[M], fa[LOG][M], pos[N], dep[M];
+  int sz, last, len[N], link[N], nex[N][A];
   void init() {
     for (int i = 0; i <= sz; ++i) {
+      memset(nex[i], 0, sizeof nex[i]);
+      memset(fa[i], 0, sizeof fa[i]);
       dis[i] = deg[i] = 0;
       e[i].clear();
-      if (dep[i]) for (int j = 0; j <= log(dep[i]); ++j) fa[j][i] = 0;
     }
-    memset(nex, 0, sizeof(int)*A*sz);
     link[0] = -1; sz = 1; last = 0;
   }
   int extend(int c) {
@@ -69,67 +67,30 @@ struct SAM { // root 0
     link[q] = link[cur] = clone;
     return cur;
   }
-  void insert() {
-    for (int i = 0; i < n; ++i) {
-      last = extend(s[i]-C);
-      pos[i+1] = last;
-    }
-  }
-  void build() { // topo on parent tree
-    memset(t, 0, sizeof(int)*sz);
-    for (int i = 0; i < sz; ++i) ++t[len[i]];
-    for (int i = 1; i < sz; ++i) t[i] += t[i-1];
-    for (int i = 0; i < sz; ++i) rk[--t[len[i]]] = i;
-    // for (int _ = sz-1, i, j; _; --_) { // assert(rk[0] == 0);
-    dep[0] = 0;
-    for (int _ = 1, i, j; _ < sz; ++_) {
-      i = rk[_];
-      j = link[i];
-      fa[0][i] = j;
-      dep[i] = dep[j]+1;
-      e[j].emplace_back(i, 0); ++deg[i];
-      for (int k = 1; 1<<k <= dep[i]; ++k) {
-        fa[k][i] = fa[k-1][fa[k-1][i]];
-      }
-    }
-  }
-  int get_pos(int l, int r) {
-    int p = pos[r];
-    for (int i = log(dep[p]); i >= 0; --i) {
-      if (len[fa[i][p]] >= r-l+1) p = fa[i][p];
-    }
-    return p;
-  }
 } sam;
 
-inline void solve() {
-  scanf("%s", s);
-  n = strlen(s);
-  reverse(s, s+n);
-  sam.init();
-  sam.insert();
-  sam.build();
-  scanf("%d", &na);
-  int T = sam.sz;
-  for (int i = 1, l, r; i <= na; ++i) {
-    scanf("%d%d", &l, &r);
-    lena[i] = r-l+1;
-    a[i] = sam.get_pos(n-r+1, n-l+1);
-    e[a[i]].emplace_back(T, lena[i]); ++deg[T];
+void dfs(int u = 0) {
+  for (int i = 1; (1<<i) <= dep[u]; ++i)
+    fa[u][i] = fa[fa[u][i-1]][i-1];
+  for (auto edge : e[u]) {
+    int v = edge.first;
+    dep[v] = dep[u]+1;
+    fa[v][0] = u;
+    dfs(v);
   }
-  scanf("%d", &nb);
-  for (int i = 1, l, r; i <= nb; ++i) {
-    scanf("%d%d", &l, &r);
-    b[i] = sam.get_pos(n-r+1, n-l+1);
-  }
-  scanf("%d", &m);
-  for (int i = 1, x, y; i <= m; ++i) {
-    scanf("%d%d", &x, &y);
-    e[a[x]].emplace_back(b[y], lena[x]); ++deg[b[y]];
-  }
-  int cnt = 0;
+}
+
+int get_pos(int l, int r) {
+  int p = endp[r];
+  for (int i = log(dep[p]); i >= 0; --i)
+    if (sam.len[fa[p][i]] >= r-l+1) p = fa[p][i];
+  return p;
+}
+
+ll bfs() {
   queue<int> q;
-  for (int i = 0; i <= T; ++i) if (!deg[i]) q.push(i);
+  int cnt = 0;
+  for (int i = 0; i <= sz; ++i) if (!deg[i]) q.push(i);
   while (q.size()) {
     int u = q.front();
     q.pop();
@@ -141,7 +102,52 @@ inline void solve() {
       if (--deg[v] == 0) q.push(v);
     }
   }
-  printf("%lld\n", cnt < sam.sz+1 ? -1ll : dis[T]);
+  return cnt == sz+1 ? dis[sz] : -1;
+}
+
+inline void solve() {
+  scanf("%s", s+1);
+  n = strlen(s+1);
+  reverse(s+1, s+n+1);
+  sam.init();
+  for (int i = 1; i <= n; ++i) {
+    endp[i] = sam.last = sam.extend(s[i]-'a');
+  }
+  scanf("%d", &na);
+  sz = sam.sz;
+  for (int i = 1; i < sz; ++i) {
+    e[sam.link[i]].emplace_back(i, 0); ++deg[i];
+  }
+  dfs();
+  for (int i = 1, l, r; i <= na; ++i) {
+    scanf("%d%d", &l, &r);
+    lena[i] = r-l+1;
+    a[i] = get_pos(n-r+1, n-l+1);
+    e[a[i]].emplace_back(sz, lena[i]); ++deg[sz];
+  }
+  scanf("%d", &nb);
+  for (int i = 1, l, r; i <= nb; ++i) {
+    scanf("%d%d", &l, &r);
+    b[i] = get_pos(n-r+1, n-l+1);
+  }
+  scanf("%d", &m);
+  for (int i = 1, x, y; i <= m; ++i) {
+    scanf("%d%d", &x, &y);
+    e[a[x]].emplace_back(b[y], lena[x]); ++deg[b[y]];
+  }
+  #ifdef DEBUG
+  for (int i = 1; i <= na; ++i) {
+    cout << i << ' ' << a[i] << '\n';
+  }
+  for (int i = 1; i <= nb; ++i) {
+    cout << i << ' ' << b[i] << '\n';
+  }
+  for (int i = 0; i <= sz; ++i) {
+    cout << i << ' ';
+    orzeach(e[i]);
+  }
+  #endif
+  printf("%lld\n", bfs());
 }
 
 signed main() {

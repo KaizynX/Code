@@ -1,11 +1,11 @@
 /*
  * @Author: Kaizyn
  * @Date: 2021-10-01 15:10:04
- * @LastEditTime: 2021-10-01 19:01:35
+ * @LastEditTime: 2021-10-01 19:30:14
  */
 #include <bits/stdc++.h>
 
-#define DEBUG
+// #define DEBUG
 
 using namespace std;
 namespace hjt {
@@ -35,10 +35,11 @@ const int M = N<<1;
 const int LOG = log(M)+3;
 
 char s[N];
-int n, m, na, nb;
-int a[N], b[N], lena[N], deg[M];
-ll dis[M];
-vector<pii> e[M];
+int n, m, na, nb, id;
+int a[N], b[N], lena[N], lenb[N], deg[M+N+N];
+ll dis[M+N+N];
+vector<pii> e[M+N+N];
+map<int, int> mp[M];
 
 struct SAM { // root 0
   static const int A = 26;
@@ -47,8 +48,7 @@ struct SAM { // root 0
   int t[M], rk[M], fa[LOG][M], pos[N], dep[M];
   void init() {
     for (int i = 0; i <= sz; ++i) {
-      dis[i] = deg[i] = 0;
-      e[i].clear();
+      mp[i].clear();
       if (dep[i]) for (int j = 0; j <= log(dep[i]); ++j) fa[j][i] = 0;
     }
     memset(nex, 0, sizeof(int)*A*sz);
@@ -80,14 +80,12 @@ struct SAM { // root 0
     for (int i = 0; i < sz; ++i) ++t[len[i]];
     for (int i = 1; i < sz; ++i) t[i] += t[i-1];
     for (int i = 0; i < sz; ++i) rk[--t[len[i]]] = i;
-    // for (int _ = sz-1, i, j; _; --_) { // assert(rk[0] == 0);
     dep[0] = 0;
     for (int _ = 1, i, j; _ < sz; ++_) {
       i = rk[_];
       j = link[i];
       fa[0][i] = j;
       dep[i] = dep[j]+1;
-      e[j].emplace_back(i, 0); ++deg[i];
       for (int k = 1; 1<<k <= dep[i]; ++k) {
         fa[k][i] = fa[k-1][fa[k-1][i]];
       }
@@ -115,24 +113,63 @@ inline void solve() {
     scanf("%d%d", &l, &r);
     lena[i] = r-l+1;
     a[i] = sam.get_pos(n-r+1, n-l+1);
-    e[a[i]].emplace_back(T, lena[i]); ++deg[T];
+    mp[a[i]][lena[i]] = 0;
   }
   scanf("%d", &nb);
   for (int i = 1, l, r; i <= nb; ++i) {
     scanf("%d%d", &l, &r);
+    lenb[i] = r-l+1;
     b[i] = sam.get_pos(n-r+1, n-l+1);
+    mp[b[i]][lenb[i]] = 0;
   }
+  // 拆点
+  int ids = 0;
+  for (int i = 0; i <= T; ++i) {
+    if (mp[i].empty()) mp[i][sam.len[i]] = 0;
+    for (auto it = mp[i].begin(); it != mp[i].end(); ++it) {
+      it->second = ++ids;
+      if (it != mp[i].begin()) {
+        e[ids-1].emplace_back(ids, 0); ++deg[ids];
+      }
+    }
+  }
+  for (int i = 1, ii, jj, j; i < T; ++i) {
+    j = sam.link[i];
+    ii = mp[i].begin()->second;
+    jj = mp[j].rbegin()->second;
+    e[jj].emplace_back(ii, 0); ++deg[ii];
+  }
+  T = mp[T].begin()->second;
+  for (int i = 1; i <= na; ++i) {
+    a[i] = mp[a[i]][lena[i]];
+    e[a[i]].emplace_back(T, lena[i]); ++deg[T];
+  }
+  for (int i = 1; i <= nb; ++i) {
+    b[i] = mp[b[i]][lenb[i]];
+  }
+  // 拆点
   scanf("%d", &m);
   for (int i = 1, x, y; i <= m; ++i) {
     scanf("%d%d", &x, &y);
     e[a[x]].emplace_back(b[y], lena[x]); ++deg[b[y]];
   }
+#ifdef DEBUG
+  for (int i = 0; i <= sam.sz; ++i) {
+    printf("e[%d].size(%d),%d\n", i, (int)mp[i].size(), mp[i].begin()->second);
+  }
+  for (int i = 1; i <= ids; ++i) {
+    cout << i << ' '; orzeach(e[i]);
+  }
+#endif
   int cnt = 0;
   queue<int> q;
-  for (int i = 0; i <= T; ++i) if (!deg[i]) q.push(i);
+  for (int i = 1; i <= ids; ++i) if (!deg[i]) q.push(i);
   while (q.size()) {
     int u = q.front();
     q.pop();
+    #ifdef DEBUG
+    orz(u);
+    #endif
     ++cnt;
     for (auto edge : e[u]) {
       int v = edge.first;
@@ -141,7 +178,15 @@ inline void solve() {
       if (--deg[v] == 0) q.push(v);
     }
   }
-  printf("%lld\n", cnt < sam.sz+1 ? -1ll : dis[T]);
+  #ifdef DEBUG
+  orz(cnt);
+  orz(ids);
+  #endif
+  printf("%lld\n", cnt == ids ? dis[T] : -1ll);
+  for (int i = 1; i <= ids; ++i) {
+    dis[i] = deg[i] = 0;
+    e[i].clear();
+  }
 }
 
 signed main() {
