@@ -2937,7 +2937,7 @@ signed main() {
 ```cpp
 template <typename T, typename U = std::greater<T>>
 struct ST {
-  static const int NN = (int)log2(N)+3;
+  static const int NN = 31-__builtin_clz(N)+3;
   static const T INF = 1e9;
   int lg2[N];
   U cmp = U();
