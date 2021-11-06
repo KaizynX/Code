@@ -291,6 +291,7 @@ struct HashNumber {
 {% spoiler "代码" %}
 ```cpp
 #define log(x) (31-__builtin_clz(x))
+// #define log(x) (63-__builtin_clzll(x))
 // lg2[i] = lg2(i) +1
 for(int i = 1; i <= n; ++i) lg2[i] = lg2[i>>1]+1;
 // lg2[i] = (int)log2(i)
