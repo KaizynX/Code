@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
  * @Date: 2021-11-09 10:06:57
- * @LastEditTime: 2021-11-09 11:19:11
+ * @LastEditTime: 2021-11-09 13:06:47
  */
 #include <bits/stdc++.h>
 
@@ -34,7 +34,12 @@ const int INF = 0x3f3f3f3f;
 int x, y;
 
 inline void solve() {
-  ;
+  cin >> x >> y;
+  if (x > y) {
+    cout << x+y << '\n';
+  } else {
+    cout << y-y%x/2 << '\n';
+  }
 }
 
 signed main() {
