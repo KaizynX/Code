@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
  * @Date: 2021-11-09 11:19:24
- * @LastEditTime: 2021-11-09 11:20:55
+ * @LastEditTime: 2021-11-09 18:32:04
  */
 #include <bits/stdc++.h>
 
@@ -197,46 +197,54 @@ using Mint = Modular<VarMod>;
 constexpr int md = 998244353;
 using Mint = Modular<std::integral_constant<decay<decltype(md)>::type, md>>;
 
-template <typename T>
-struct BinaryIndexedTree {
-  int n;
-  vector<T> tr;
-  void init(const int &n) { this->n = n; tr = vector<T>(n+1, 0); }
-  void add(const int &x, const T &v) { for (int i = x; i <= n; i += i&-i) tr[i] += v; }
-  void add(const int &x, const int &y, const T &v) { add(x, v); add(y+1, -v); }
-  T query(const int &x) { T res = 0; for (int i = x ; i; i -= i&-i) res += tr[i]; return res; }
-  T query(const int &x, const int &y) { return query(y)-query(x-1); }
-};
-
 int n;
 int a[N];
-BinaryIndexedTree<Mint> sum[2], cnt[2];
+vector<pair<int, Mint>> cnt[2], sum[2];
 const int M = 1e5;
 
 inline void solve() {
   cin >> n;
   for (int i = 1; i <= n; ++i) cin >> a[i];
-  Mint ans = 0;
   for (int i : {0, 1}) {
-    sum[i].init(M);
-    cnt[i].init(M);
+    cnt[i].clear();
+    sum[i].clear();
   }
-  cnt[n&1].add(a[n], 1);
-  for (int i = n-1; i; --i) {
-    // a[i]/k == j
-    for (int j = 1, l, r; j*j <= a[i]; ++j) {
-      l = max(1, a[i]/(j+1));
-      r = a[i]/j;
-    }
+  ll ans = 0;
+  cnt[n&1].emplace_back({a[n], 1});
+  sum[n&1].emplace_back({a[n], 0});
+  for (int i = n-1, j, l, r, k; i; --i) {
+    cnt[i&1].clear();
+    sum[i&1].clear();
+    auto pc = cnt[~i&1].begin();
+    auto ps = sum[~i&1].begin();
     // a[i]/j == k
-    for (int j = 1, l, r; j*j < a[i]; ++j) {
-      l = a[i]/j;
+    for (j = 1; j*j <= a[i]; ++j) {
+      k = l = a[i]/j;
       r = (a[i]+j-1)/j;
-      Mint sum = tree.query(r, M);
-      if (l < M) tree.update(l+1, M, 0);
-      tree.update(l, tree.query(l)+sum);
+      pair<int, Mint> curc = {l, 0};
+      pair<int, Mint> curs = {l, 0};
+      while (pc != cnt[~i&1].end() && pc->first >= r) {
+        curc->second += pc->second;
+        curs->second += ps->second;
+      }
+      curs->second += curc->second*(j-1);
+      ans += cur->second;
     }
-    ans += tree.query(1, 1e5);
+    // a[i]/k == j
+    for (j = k-1, k = a[i]/k; j; --j) {
+      l = max(1, a[i]/(j+1));
+      // r = a[i]/j;
+      if (r == k) continue;
+      pair<int, Mint> curc = {l, 0};
+      pair<int, Mint> curs = {l, 0};
+      while (pc != cnt[~i&1].end() && pc->first >= r) {
+        curc->second += pc->second;
+        curs->second += ps->second;
+      }
+      curs->second += curc->second*(l-1);
+      ans += cur->second;
+    }
+    pc.begin()->second++;
   }
   cout << ans << '\n';
 }
