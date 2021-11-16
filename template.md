@@ -6412,6 +6412,35 @@ void dfz(int u = 1) {
 {% endspoiler %}
 ### 边分治
 
+## 欧拉图
+
+### Hierholzer 算法
+
+复杂度 $O(n+m)$
+
+保存答案可以使用 stack ，因为如果找的不是回路的话必须将那一部分放在最后。
+
+如 E{(1,2),(2,3),(3,4),(4,5),(5,3)}
+
+{% spoiler "代码" %}
+```cpp
+vector<EDGE> e[N];
+vector<EDGE>::iterator beg[N];
+void Hierholzer(int u) {
+  for (auto &it = beg[u]; it != e[u].end(); ) {
+    if (vis[这条边]) {
+      ++it;
+    } else {
+      vis[这条边] = 1;
+      ++it;
+      Hierholzer(v);
+    }
+  }
+  stk.push(u);
+}
+```
+
+{% endspoiler %}
 ---
 # 数论
 ## 快排
