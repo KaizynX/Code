@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
- * @Date: 2021-11-22 14:31:56
- * @LastEditTime: 2021-11-22 23:39:15
+ * @Date: 2021-11-22 23:31:58
+ * @LastEditTime: 2021-11-23 09:45:50
  */
 #include <bits/stdc++.h>
 
@@ -29,10 +29,13 @@ const double PI = acos(-1);
 const int MOD = 998244353; // 1e9+7;
 const int INF = 0x3f3f3f3f;
 // const ll INF = 1e18;
-// const int N = 1e9;
+// const int N = ;
 
+// 二分找到一个有值的地方
+// 向左向右试探得到其中一个边界
+// 继续二分得到中间分界
 int n;
-map<pii, int> mp;
+map<pii, ll> mp;
 
 ll query(int l, int r) {
   if (l == r) return 0;
@@ -53,40 +56,45 @@ ll check(ll x) {
 inline void solve() {
   mp.clear();
   cin >> n;
-  ll all = query(1, n);
-  int l = 1, r = n, mid, i, j, k;
-  if (all == 1) {
-    while (l < r) {
-      mid = (l+r)/2;
-      if (query(l, mid) == 1) r = mid;
-      else l = mid+1;
+  ll all = query(1, n), x, y;
+  int l = 1, r = n, mid, i = -1, j = -1, k = -1;
+  while (l < r) {
+    mid = (l+r+1)/2;
+    x = query(mid, n);
+    if (x == 0) {
+      r = mid-1;
+      continue;
+    } else if (x == all) {
+      l = mid;
+      continue;
     }
-    k = l;
-    j = k-1;
-    i = j-1;
-  } else {
-    while (l < r) {
-      mid = (l+r+1)/2;
-      ll x = query(1, mid);
-      if (x == 0) {
-        l = mid+1;
-        continue;
-      }
-      ll y = check(x);
-      if (y == -1) {
-        r = mid-1;
-        continue;
-      }
-      if (query(1, mid-y+1) == 0) {
-        i = mid-y+1;
-        break;
-      } else {
-        r = mid-1;
-        continue;
-      }
+    y = check(x);
+    if (~y && query(mid+y-1, n) == 0) {
+      k = mid+y-1;
+      if (query(k-1, n) == 0) --k;
+      r = mid;
+    } else { // wrong
+      y = check(all-x);
+      i = mid-y+1;
+      l = mid+1;
     }
-    if (query(1, i+1) == 0) ++i;
+    break;
   }
+  if (~i) while (l < r) {
+    mid = (l+r+1)/2;
+    x = query(mid, n);
+    if (x == (mid-i)*(mid-i-1ll)/2) l = mid;
+    else r = mid-1;
+  }
+  else while (l < r) {
+    mid = (l+r)/2;
+    x = query(mid, n);
+    if (x == (k-mid+1ll)*(k-mid)/2) r = mid;
+    else l = mid+1;
+  }
+  j = l;
+  if (i == -1) i = j-check(query(1, j));
+  if (k == -1) k = j+check(query(j, n))-1;
   cout << "! " << i << ' ' << j << ' ' << k << endl;
 }
 
@@ -101,3 +109,10 @@ signed main() {
   }
   return 0;
 }
+/*
+4637829 3424 3426 3427
+
+1000000000 1 3 1000000000
+
+1000000000 1 999999999 1000000000
+*/

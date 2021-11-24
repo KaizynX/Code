@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
- * @Date: 2021-11-22 14:31:56
- * @LastEditTime: 2021-11-22 23:39:15
+ * @Date: 2021-11-24 00:37:54
+ * @LastEditTime: 2021-11-24 01:03:16
  */
 #include <bits/stdc++.h>
 
@@ -29,65 +29,33 @@ const double PI = acos(-1);
 const int MOD = 998244353; // 1e9+7;
 const int INF = 0x3f3f3f3f;
 // const ll INF = 1e18;
-// const int N = 1e9;
+const int N = 2e5+7;
 
 int n;
-map<pii, int> mp;
+ll a[N], s[N];
 
-ll query(int l, int r) {
-  if (l == r) return 0;
-  if (mp.count({l, r})) return mp[{l, r}];
-  cout << "? " << l << " " << r << endl;
-  ll x;
-  cin >> x;
-  return mp[{l, r}] = x;
-}
-
-ll check(ll x) {
-  for (ll y = sqrt(2*x), i = max(1ll, y-3); i <= y+3; ++i) {
-    if (i*(i-1) == 2*x) return i;
+bool check(int m) {
+  int l = (m-1)/2, r = m-l;
+  for (int i = l; i+r <= n; ++i) {
+    ll sum = s[i+r]-s[i]+s[l];
+    int ln = upper_bound(a+1, a+l+1, sum/m-(sum%m==0))-a-1;
+    int rn = a+i+r+1-upper_bound(a+i+1, a+i+r+1, sum/m);
+    if (rn > ln) return true;
   }
-  return -1;
+  return false;
 }
 
 inline void solve() {
-  mp.clear();
   cin >> n;
-  ll all = query(1, n);
-  int l = 1, r = n, mid, i, j, k;
-  if (all == 1) {
-    while (l < r) {
-      mid = (l+r)/2;
-      if (query(l, mid) == 1) r = mid;
-      else l = mid+1;
-    }
-    k = l;
-    j = k-1;
-    i = j-1;
-  } else {
-    while (l < r) {
-      mid = (l+r+1)/2;
-      ll x = query(1, mid);
-      if (x == 0) {
-        l = mid+1;
-        continue;
-      }
-      ll y = check(x);
-      if (y == -1) {
-        r = mid-1;
-        continue;
-      }
-      if (query(1, mid-y+1) == 0) {
-        i = mid-y+1;
-        break;
-      } else {
-        r = mid-1;
-        continue;
-      }
-    }
-    if (query(1, i+1) == 0) ++i;
+  for (int i = 1; i <= n; ++i) cin >> a[i];
+  for (int i = 1; i <= n; ++i) s[i] = s[i-1]+a[i];
+  int l = 1, r = n, mid;
+  while (l < r) {
+    mid = (l+r+1)/2;
+    if (check(mid)) l = mid;
+    else r = mid-1;
   }
-  cout << "! " << i << ' ' << j << ' ' << k << endl;
+  cout << n-l << '\n';
 }
 
 signed main() {
