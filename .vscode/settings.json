@@ -80,5 +80,6 @@
         "variant": "cpp",
         "*.txt": "cpp"
     },
-    "python.pythonPath": "C:\\ProgramData\\Anaconda3\\python.exe"
+    "python.pythonPath": "C:\\ProgramData\\Anaconda3\\python.exe",
+    "C_Cpp.dimInactiveRegions": true
 }
