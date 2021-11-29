@@ -7601,18 +7601,16 @@ template <typename T> inline T miu(T x) {
 {% spoiler "代码" %}
 ```cpp
 struct Euler {
-  vector<int> prime;
-  vector<bool> check;
-  bool operator [](const int &i) { return check[i]; }
+  vector<int> prime, check;
+  int& operator [](const int &i) { return check[i]; }
   void init(int n) {
     prime.clear();
-    check = vector<bool>(n+1, true);
-    check[1] = false;
+    check = vector<int>(n+1);
     for (int i = 2; i <= n; ++i) {
-      if (check[i]) prime.emplace_back(i);
+      if (!check[i]) prime.emplace_back(i), check[i] = i;
       for (const int &j : prime) {
         if (i*j > n) break;
-        check[i*j] = false;
+        check[i*j] = j;
         if (i%j == 0) break;
       }
     }
@@ -7622,7 +7620,24 @@ struct Euler {
 
 {% endspoiler %}
 
----
+## 求所有因子
+{% spoiler "代码" %}
+```cpp
+vector<int> get_fac(int x) {
+  vector<int> fac(1, 1), tmp;
+  while (E[x]) {
+    tmp = fac;
+    for (int y = E[x]; x%y == 0; x /= y) {
+      for (int &i : tmp) i *= y;
+      fac.insert(fac.end(), tmp.begin(), tmp.end());
+    }
+  }
+  return fac;
+}
+```
+
+{% endspoiler %}
+
 ## 判断素数(质数)
  某较优方法
 {% spoiler "代码" %}
