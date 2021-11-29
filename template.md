@@ -5099,6 +5099,9 @@ struct EK {
 #### Dinic
 普通情况下 $O(n^2m)$
 二分图中 $O(\sqrt{n}m)$
+
+**该板子存在可能效率极其低下的问题**
+
 {% spoiler "代码" %}
 ```cpp
 template <typename T>
