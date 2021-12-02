@@ -6497,6 +6497,10 @@ nth_element(a+1, a+k+1, a+n+1);
 
 {% endspoiler %}
 
+### bfprt 算法
+
+目前解决TOP-K问题最有效的算法即是BFPRT算法，又称为中位数的中位数算法，最坏时间复杂度为O(n)。
+
 ---
 ## [求逆序对(归并排序)](https://www.luogu.org/problemnew/show/P1908)
 {% spoiler "代码" %}
