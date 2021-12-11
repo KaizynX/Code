@@ -6436,6 +6436,7 @@ void Hierholzer(int u) {
     if (vis[这条边]) {
       ++it;
     } else {
+      int v = e[*it].x ^ e[*it].y ^ u;
       vis[这条边] = 1;
       ++it;
       Hierholzer(v);
