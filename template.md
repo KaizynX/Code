@@ -442,6 +442,10 @@ $$\displaystyle
 
 那么只要求出不等号左边的式子的最大值就行了。如果最大值比 $0$ 要大，说明 $mid$ 是可行的，否则不可行。
 
+## 不转义
+
+R"()"
+
 ---
 # 计算几何
 ## 向量 坐标 直线 圆 (结构体)
@@ -8649,10 +8653,27 @@ using Mint = Modular<std::integral_constant<decay<decltype(md)>::type, md>>;
 
 ---
 # 高精度
-食用前请必须注意位数是否足够!
+
+## 一个小技巧
+a + b == (a ^ b) + ((a & b) << 1)
+
+{% spoiler "代码" %}
+```cpp
+int add(int a, int b) {
+    if (b == 0) return a;
+    return add(a ^ b, (a & b) << 1);
+}
+```
+
+{% endspoiler %}
+
+可以使用 bitset 实现高精度加法
+
 ## vector版本
 [压位+vector+符号 版本](https://github.com/KaizynX/Oier/blob/master/BigInteger/BigInteger.cpp)
 ## int[]版本
+食用前请必须注意位数是否足够!
+
 [一本通习题](http://ybt.ssoier.cn:8088/)
 [洛谷习题](https://www.luogu.org/problemnew/lists?name=a%2Bb)
 
