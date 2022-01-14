@@ -446,6 +446,25 @@ $$\displaystyle
 
 R"()"
 
+## 十六进制输出内存
+
+{% spoiler "代码" %}
+```cpp
+template <typename T>
+void hex_print(const T &y) {
+  static const char HEX[] = "0123456789ABCDEF";
+  char *x = (char*)(&y);
+  printf("0x");
+  for (int i = sizeof(T) - 1; i >= 0; --i) { // 小端存储
+    char a = *(x + i);
+    printf("%c%c",HEX[(a&0xF0)>>4],HEX[a&0x0F]);
+  }
+  puts("");
+}
+```
+
+{% endspoiler %}
+
 ---
 # 计算几何
 ## 向量 坐标 直线 圆 (结构体)
