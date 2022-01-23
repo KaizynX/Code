@@ -6565,10 +6565,9 @@ struct LinearBase {
   vector<T> b, rb, p;
   LinearBase(){ init(); }
   void init() {
-    tot = zero = 0;;
-    vector<T>(sz, 0).swap(b);
-    vector<T>().swap(rb);
-    vector<T>().swap(p);
+    tot = zero = 0;
+    b = vector<T>(sz, 0);
+    rb = p = vector<T>();
   }
   template <typename TT>
   void build(TT a[], const int &n) {
