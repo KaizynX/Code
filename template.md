@@ -469,6 +469,46 @@ void hex_print(const T &y) {
 
 2n 个人两两组合方案数 $(2n-1)*(2n-3)*\dots$
 
+## INF
+
+{% spoiler "代码" %}
+```cpp
+template <typename T> static constexpr T inf = numeric_limits<T>::max() / 2;
+```
+
+{% endspoiler %}
+
+## 高维前缀和
+
+可以将高维数组映射成一维，从小到大枚举即可
+
+{% spoiler "代码" %}
+```cpp
+// 二维
+for(int i = 1; i <= n; i++)
+    for(int j = 1; j <= n; j++)
+        a[i][j] += a[i - 1][j];
+for(int i = 1; i <= n; i++)
+    for(int j = 1; j <= n; j++)
+        a[i][j] += a[i][j - 1];
+// 三维
+for(int i = 1; i <= n; i++)
+    for(int j = 1; j <= n; j++)
+        for(int k = 1; k <= n; k++) 
+            a[i][j][k] += a[i - 1][j][k];
+for(int i = 1; i <= n; i++)
+    for(int j = 1; j <= n; j++)
+        for(int k = 1; k <= n; k++)
+            a[i][j][k] += a[i][j - 1][k];
+for(int i = 1; i <= n; i++)
+    for(int j = 1; j <= n; j++)
+        for(int k = 1; k <= n; k++)
+            a[i][j][k] += a[i][j][k - 1];
+// 以此类推,每一维度都做一遍前缀和
+```
+
+{% endspoiler %}
+
 ---
 # 计算几何
 ## 向量 坐标 直线 圆 (结构体)
