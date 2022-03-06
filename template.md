@@ -7164,11 +7164,12 @@ void fft(comp *a, const int &n) {
       }
     }
 }
+// 定义在函数内static Compilation Error: "Compiled file is too large" 
+comp a[SIZE], b[SIZE];
+comp dfta[SIZE], dftb[SIZE];
 template <class T>
 inline void work(T *x, const int &n, T *y, const int &m) {
   static int bit, L;
-  static comp a[SIZE], b[SIZE];
-  static comp dfta[SIZE], dftb[SIZE];
 
   for (L = 1, bit = 0; L < n+m-1; ++bit, L <<= 1);
   for (int i = 0; i < L; ++i) bitrev[i] = bitrev[i >> 1] >> 1 | ((i & 1) << (bit - 1));
