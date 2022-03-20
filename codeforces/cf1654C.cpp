@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
- * @Date: 2022-03-12 11:21:55
- * @LastEditTime: 2022-03-12 13:17:01
+ * @Date: 2022-03-20 19:50:59
+ * @LastEditTime: 2022-03-20 19:54:42
  */
 #include <bits/stdc++.h>
 
@@ -28,56 +28,32 @@ const double eps = 1e-7;
 const double PI = acos(-1);
 const int MOD = 998244353; // 1e9+7;
 template <typename T> static constexpr T inf = numeric_limits<T>::max() / 2;
-const int N = 1e5 + 7;
+const int N = 2e5 + 7;
 
-int n, m;
-int a[N], p[N];
-vector<pii> ans;
-#ifdef DEBUG
-set<pii> vis;
-#endif
+int n;
+int a[N];
 
-void f(int x, int y) {
-  swap(a[x], a[y]);
-  ans.emplace_back(x, y);
-  #ifdef DEBUG
-  cout << x << "->" << y << '\n';
-  if (vis.count({x, y}) || vis.count({y, x})) {
-    cerr << "wrong answer!\n";
-  }
-  vis.insert({x, y});
-  #endif
-}
-
-void my_swap(int x, int y) {
-  f(x, n + 1);
-  f(y, n + 2);
-  f(y, n + 1);
-  f(x, n + 2);
-}
-
-inline void solve() {
+inline bool solve() {
+  priority_queue<ll> q;
   cin >> n;
+  ll sum = 0;
   for (int i = 1; i <= n; ++i) {
     cin >> a[i];
-    p[a[i]] = i;
+    sum += a[i];
   }
-  if (is_sorted(a + 1, a + n + 1)) return cout << "0 0\n", void();
-  a[n + 1] = n + 1;
-  a[n + 2] = n + 2;
-  m = 2;
-  for (int i = 1; i <= n; ++i) if (i != a[i]) {
-    f(i, n + 1);
-    while (a[a[n + 1]] != i) {
-      f(a[n + 1], n + 1);
+  q.push(sum);
+  sort(a + 1, a + n + 1);
+  for (int i = n; i; --i) {
+    while (q.top() > a[i]) {
+      ll x = q.top();
+      q.pop();
+      q.push(x / 2);
+      q.push(x - x / 2);
     }
-    f(a[n + 1], n + 2);
-    f(i, n + 2);
-    f(a[n + 1], n + 1);
+    if (q.top() != a[i]) return false;
+    q.pop();
   }
-  if (a[n + 1] != n + 1) f(n + 1, n + 2);
-  cout << m << ' ' << ans.size() << '\n';
-  for (auto &pr : ans) cout << pr.first << ' ' << pr.second << '\n';
+  return true;
 }
 
 signed main() {
@@ -85,13 +61,9 @@ signed main() {
   ios::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr);
 #endif
   int T = 1;
-  // cin >> T; // scanf("%d", &T);
+  cin >> T; // scanf("%d", &T);
   for (int t = 1; t <= T; ++t) {
-    solve();
+    cout << (solve() ? "Yes" : "No") << '\n';
   }
   return 0;
 }
-/*
-3
-2 3 1
-*/

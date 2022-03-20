@@ -1,7 +1,7 @@
 /*
  * @Author: Kaizyn
- * @Date: 2022-03-20 12:49:59
- * @LastEditTime: 2022-03-20 13:21:47
+ * @Date: 2022-03-20 19:42:08
+ * @LastEditTime: 2022-03-20 19:42:40
  */
 #include <bits/stdc++.h>
 
@@ -28,52 +28,26 @@ const double eps = 1e-7;
 const double PI = acos(-1);
 const int MOD = 998244353; // 1e9+7;
 template <typename T> static constexpr T inf = numeric_limits<T>::max() / 2;
-// const int N = ;
+const int N = 1e3 + 7;
 
-ll n, k;
-using ld = long double;
-#define double ld
-
-ll f(ll y, double p) {
-	ld x = p * (ld)y;
-  if (x > 2e18) return 2e18;
-  return round(x);
-}
-
-bool check(double p) {
-  ll x = 1;
-  for (int i = 1; i <= k; ++i) {
-    x = f(x, p);
-    if (x >= n) return true;
-  }
-  return false;
-}
+int n;
+int a[N];
 
 inline void solve() {
-  scanf("%lld%lld", &n, &k);
-  if (n == 1) return printf("1\n"), void();
-  if (k == 1) return printf("%lld\n", n), void();
-  if (k >= 102) return printf("1.5\n"), void();
-  double l = 1.5, r = n, mid;
-  for (int i = 1; i <= 1000; ++i) {
-    mid = (l + r) / 2;
-    if (check(mid)) r = mid;
-    else l = mid;
-  }
-  printf("%.10Lf\n", (l + r) / 2);
+  cin >> n;
+  for (int i = 1; i <= n; ++i) cin >> a[i];
+  sort(a + 1, a + n + 1);
+  cout << a[n] + a[n - 1] << '\n';
 }
 
 signed main() {
 #ifdef ONLINE_JUDGE
-  // ios::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr);
+  ios::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr);
 #endif
   int T = 1;
-  // cin >> T; // scanf("%d", &T);
+  cin >> T; // scanf("%d", &T);
   for (int t = 1; t <= T; ++t) {
     solve();
   }
   return 0;
 }
-/*
-1000000000000000000
-*/
