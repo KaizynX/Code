@@ -7763,13 +7763,18 @@ inline void gcd_init(const int &n) {
 ## [分解质因数](https://www.luogu.org/problemnew/show/P1075)
 {% spoiler "代码" %}
 ```cpp
-// x = pi^ki...
-for(int i = 2; i*i <= x; ++i)
-  if(x%i == 0) {
-    p[++tot] = i;
-    for(; x%i == 0; x /= i) k[tot]++;
+template <typename T>
+vector<pair<T, int>> get_fac(T x) {
+  vector<pair<T, int>> ans;
+  for (T i = 2; i * i <= x; ++i) {
+    if (x % i) continue;
+    int k = 0;
+    for ( ; x % i == 0; x /= i) ++k;
+    ans.emplace_back(i, k);
   }
-if(x > 1) p[++tot] = x, k[tot] = 1;
+  if (x > 1) ans.emplace_back(x, 1);
+  return ans;
+}
 ```
 
 {% endspoiler %}
