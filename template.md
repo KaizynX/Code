@@ -7677,7 +7677,7 @@ struct Euler {
   int& operator [](const int &i) { return check[i]; }
   void init(int n) {
     prime.clear();
-    check = vector<int>(n+1);
+    check = vector<int>(n+1,0);
     for (int i = 2; i <= n; ++i) {
       if (!check[i]) prime.emplace_back(i), check[i] = i;
       for (const int &j : prime) {
