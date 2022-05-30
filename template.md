@@ -7695,13 +7695,14 @@ struct Euler {
 ## 求所有因子
 {% spoiler "代码" %}
 ```cpp
-vector<int> get_fac(int x) {
-  vector<int> fac(1, 1), tmp;
+template <typename T>
+vector<T> get_fac(T x) {
+  vector<T> fac = {1};
   while (E[x]) {
-    tmp = fac;
-    for (int y = E[x]; x%y == 0; x /= y) {
-      for (int &i : tmp) i *= y;
-      fac.insert(fac.end(), tmp.begin(), tmp.end());
+    for (T y = E[x], z = y, sz = fac.size(); x % y == 0; x /= y, z *= y) {
+      for (int i = 0; i < sz; ++i) {
+        fac.emplace_back(fac[i] * z);
+      }
     }
   }
   return fac;
