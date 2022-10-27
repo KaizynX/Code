@@ -288,6 +288,88 @@ struct HashNumber {
 
 {% endspoiler %}
 
+{% spoiler "代码" %}
+```cpp
+struct HashVal {
+  static constexpr int Num = 2;
+  static constexpr int Mod[Num] = {25165843, 50331653};
+  static constexpr int Base[Num] = {29, 31};
+  static int Powb[Num][N];
+  static void init() {
+    for (int _ = 0; _ < Num; ++_) {
+      Powb[_][0] = 1;
+      for (int i = 1; i < N; ++i) {
+        Powb[_][i] = 1ll * Powb[_][i - 1] * Base[_] % Mod[_];
+      }
+    }
+  }
+
+  int val_[Num];
+  ll siz_;
+
+  HashVal() {
+    memset(val_, 0, sizeof val_);
+    siz_ = 0;
+  };
+  template <typename T>
+  HashVal(const T& x, int siz = 1) : siz_(siz) {
+    fill(val_, val_ + Num, x);
+  }
+
+  static int pow_B(int _, int k) {
+    assert(_ < Num);
+    if (k < N) return Powb[_][k];
+    return qpow(Base[_], k, Mod[_]);
+  }
+  bool operator == (const HashVal &rhs) const {
+    for (int _ = 0; _ < Num; ++_) {
+      if (val_[_] != rhs.val_[_]) return false;
+    }
+    return siz_ == rhs.siz_;
+  }
+  bool operator != (const HashVal &rhs) const {
+    return !(*this == rhs);
+  }
+  HashVal& operator += (const HashVal& rhs) {
+    siz_ += rhs.siz_;
+    for (int _ = 0; _ < Num; ++_) {
+      val_[_] = (1ll * val_[_] * pow_B(_, rhs.siz_) + rhs.val_[_]) % Mod[_];
+    }
+    return *this;
+  }
+  HashVal operator + (const HashVal& x) const {
+    HashVal ret = *this;
+    return ret += x;
+  }
+  friend ostream& operator << (ostream& os, const HashVal &hv) {
+    os << "size = " << hv.siz_ << ", value = {";
+    for (int _ = 0; _ < Num; ++_) {
+      if (_) os << ',';
+      os << hv.val_[_];
+    }
+    return os << "}";
+  }
+};
+
+constexpr int HashVal::Mod[HashVal::Num];
+constexpr int HashVal::Base[HashVal::Num];
+int HashVal::Powb[HashVal::Num][N];
+
+// return HashVal of string(k, ch)
+HashVal seq_init(char ch, ll k) {
+  HashVal ret;
+  k = min((ll)A, k);
+  ret.siz_ = k;
+  for (int _ = 0; _ < HashVal::Num; ++_) {
+    ret.val_[_] = qpow(HashVal::Base[_] - 1, HashVal::Mod[_] - 2, HashVal::Mod[_])
+        * (HashVal::pow_B(_, k) - 1ll) * (ch - 'a') % HashVal::Mod[_];
+  }
+  return ret;
+}
+```
+
+{% endspoiler %}
+
 ---
 ## 计算log2
 {% spoiler "代码" %}
@@ -5684,6 +5766,8 @@ struct ZKW_SPFA {
 ### 上下界网络流
 
 ### 全局最小割StoerWagner
+
+$O(VE + V^2\log V)$
 
 {% spoiler "代码" %}
 ```cpp
